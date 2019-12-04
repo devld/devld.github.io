@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.5.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png?v=7.3.0">
+  <link rel="mask-icon" href="/favicon.png?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    search: {
+      root: '/',
+      path: ''
+    },
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="8086 寄存器   寄存器 说明     AX (AH+AL) 累加器(Accumulator)   BX (BH+BL) 基地址寄存器(Base Register)   CX (CH+CL) 计数寄存器(Count Register)   DX (DH+DL) 数据寄存器(Data Register)   SP 堆栈指针寄存器, 指向栈顶(高地址)   BP 一般和SP 联合使用, 用于寻找堆">
+<meta name="keywords" content="汇编,notes">
+<meta property="og:type" content="article">
+<meta property="og:title" content="8086 汇编笔记 - 寄存器&#x2F;寻址 - 01">
+<meta property="og:url" content="https://devld.me/2017/10/29/8086-assembly-01/index.html">
+<meta property="og:site_name" content="Devld">
+<meta property="og:description" content="8086 寄存器   寄存器 说明     AX (AH+AL) 累加器(Accumulator)   BX (BH+BL) 基地址寄存器(Base Register)   CX (CH+CL) 计数寄存器(Count Register)   DX (DH+DL) 数据寄存器(Data Register)   SP 堆栈指针寄存器, 指向栈顶(高地址)   BP 一般和SP 联合使用, 用于寻找堆">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://devld.me/2017/10/29/8086-assembly-01/8086-flags-reg.png">
+<meta property="og:image" content="https://devld.me/2017/10/29/8086-assembly-01/mem-2000h-1000h.png">
+<meta property="og:image" content="https://devld.me/2017/10/29/8086-assembly-01/mov-ax-1000h.png">
+<meta property="og:updated_time" content="2019-12-04T10:10:28.232Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="8086 汇编笔记 - 寄存器&#x2F;寻址 - 01">
+<meta name="twitter:description" content="8086 寄存器   寄存器 说明     AX (AH+AL) 累加器(Accumulator)   BX (BH+BL) 基地址寄存器(Base Register)   CX (CH+CL) 计数寄存器(Count Register)   DX (DH+DL) 数据寄存器(Data Register)   SP 堆栈指针寄存器, 指向栈顶(高地址)   BP 一般和SP 联合使用, 用于寻找堆">
+<meta name="twitter:image" content="https://devld.me/2017/10/29/8086-assembly-01/8086-flags-reg.png">
+  <link rel="canonical" href="https://devld.me/2017/10/29/8086-assembly-01/">
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>8086 汇编笔记 - 寄存器/寻址 - 01 | Devld</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Devld</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+    <ul id="menu" class="menu">
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+    </ul>
+    
+
+</nav>
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://devld.me/2017/10/29/8086-assembly-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="devld">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Devld">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">8086 汇编笔记 - 寄存器/寻址 - 01
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-10-29 13:46:00" itemprop="dateCreated datePublished" datetime="2017-10-29T13:46:00+08:00">2017-10-29</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-12-04 18:10:28" itemprop="dateModified" datetime="2019-12-04T18:10:28+08:00">2019-12-04</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/汇编/" itemprop="url" rel="index"><span itemprop="name">汇编</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+  
+  <span class="post-meta-item">
+    
+    <span class="post-meta-item-icon">
+      <i class="fa fa-comment-o"></i>
+    </span>
+    
+      <span class="post-meta-item-text">评论数：</span>
+    
+  
+    <a href="/2017/10/29/8086-assembly-01/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/10/29/8086-assembly-01/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+          <br>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <html><head></head><body><h3 id="8086-寄存器"><a href="#8086-寄存器" class="headerlink" title="8086 寄存器"></a>8086 寄存器</h3><table>
+<thead>
+<tr>
+<th>寄存器</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AX (AH+AL)</td>
+<td>累加器(Accumulator)</td>
+</tr>
+<tr>
+<td>BX (BH+BL)</td>
+<td>基地址寄存器(Base Register)</td>
+</tr>
+<tr>
+<td>CX (CH+CL)</td>
+<td>计数寄存器(Count Register)</td>
+</tr>
+<tr>
+<td>DX (DH+DL)</td>
+<td>数据寄存器(Data Register)</td>
+</tr>
+<tr>
+<td>SP</td>
+<td>堆栈指针寄存器, 指向栈顶(高地址)</td>
+</tr>
+<tr>
+<td>BP</td>
+<td>一般和SP 联合使用, 用于寻找堆栈数据而不破坏SP</td>
+</tr>
+<tr>
+<td>SI</td>
+<td>源变址寄存器</td>
+</tr>
+<tr>
+<td>DI</td>
+<td>目的变址寄存器</td>
+</tr>
+<tr>
+<td>CS</td>
+<td>代码段 段寄存器</td>
+</tr>
+<tr>
+<td>DS</td>
+<td>数据段 段寄存器</td>
+</tr>
+<tr>
+<td>SS</td>
+<td>堆栈段 段寄存器</td>
+</tr>
+<tr>
+<td>ES</td>
+<td>附加数据段 端寄存器, 一般在复制数据时配合DS 当作目的段寄存器使用</td>
+</tr>
+<tr>
+<td>IP</td>
+<td>指令指针, 指向下一条指令的地址</td>
+</tr>
+<tr>
+<td>FLAGS</td>
+<td>标志寄存器 (见下表)</td>
+</tr>
+</tbody>
+</table>
+<p>标志寄存器</p>
+<a id="more"></a>
+<table>
+<thead>
+<tr>
+<th>标志</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CF</td>
+<td>进位标志 (Carry), 如果运算的最高为产生进位或借位, 则CF=1</td>
+</tr>
+<tr>
+<td>PF</td>
+<td>奇偶位 (Parity), 如果运算结果的低8 位中的1的个数(二进制)为偶数个, 则PF=1</td>
+</tr>
+<tr>
+<td>AF</td>
+<td>辅助进位标志 (Auxiliary), 当运算结果的低4 位产生一个进位或借位, 则AF=1</td>
+</tr>
+<tr>
+<td>ZF</td>
+<td>零标志 (Zero), 若运算结果为0, 则ZF=1</td>
+</tr>
+<tr>
+<td>SF</td>
+<td>符号标志 (Signed), 当数据用补码表示时, 最高为表示符号为, SF与运算结果最高为相同</td>
+</tr>
+<tr>
+<td>OF</td>
+<td>溢出标志 (Overflow), 若运算中产生了溢出, 则OF=1</td>
+</tr>
+<tr>
+<td>DF</td>
+<td>方向标志 (Direction), 用于控制串操作指令, 如果DF=0, 则串操作过程中地址会增大, 否则地址会减小</td>
+</tr>
+<tr>
+<td>IF</td>
+<td>中断允许标志 (Interrupt), 若IF=0, 则CPU不能对可屏蔽中断做出响应, 否则CPU可以接受可屏蔽中断</td>
+</tr>
+<tr>
+<td>TF</td>
+<td>单步标志 (Trap), 如果TF=1, 则CPU按跟踪方式执行指令</td>
+</tr>
+</tbody>
+</table>
+<p><img src="/2017/10/29/8086-assembly-01/8086-flags-reg.png" alt="flags"></p>
+<h3 id="数据寻址方式"><a href="#数据寻址方式" class="headerlink" title="数据寻址方式"></a>数据寻址方式</h3><ol>
+<li><p>立即寻址</p>
+<p>操作数包含在指令中</p>
+<figure class="highlight x86asm"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">MOV</span> <span class="built_in">AX</span>, <span class="number">1234H</span>    <span class="comment">; 将 1234H 存入寄存器AX, （AH = 12H, AL = 34H）</span></span><br></pre></td></tr></tbody></table></figure>
+</li>
+<li><p>寄存器寻址</p>
+<p>数据存放在寄存器中</p>
+<figure class="highlight x86asm"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">MOV</span> <span class="built_in">AX</span>, <span class="number">1234H</span></span><br><span class="line"><span class="keyword">MOV</span> <span class="built_in">AX</span>, <span class="built_in">BX</span>      <span class="comment">; 将BX中的数据放入AX</span></span><br></pre></td></tr></tbody></table></figure>
+</li>
+<li><p>直接寻址</p>
+<p>数据在内存中, 将数据所在的 16位偏移地址用方括号括起来<br>默认使用DS 段寄存器<br>对应的物理地址计算方法为: <code>段地址 * 10H + 偏移地址</code></p>
+<p>假设 <code>DS = 2000H</code><br>那么 <code>MOV AX, [1000H]</code> 读取的物理地址是:<br><code>2000H * 10H + 1000H = 21000H</code><br>表示将 物理地址 <code>21000H</code> 里的一个字型数据放到AX中</p>
+<p>假设<code>2000H:1000H</code>位置保存的数据为 <code>1234H</code>, 如下图<br><img src="/2017/10/29/8086-assembly-01/mem-2000h-1000h.png" alt="2000H:1000H"></p>
+<p>则<code>MOV AX, [1000H]</code>会将<code>34H</code>放入AH, <code>12H</code>放入AL. 即高位地址的数据存放在AX高位, 低位存在低位<br><img src="/2017/10/29/8086-assembly-01/mov-ax-1000h.png" alt="MOV AX, \[1000H\]"></p>
+</li>
+<li><p>寄存器间接寻址</p>
+<p>数据在内存中的地址存放在寄存器中</p>
+<figure class="highlight x86asm"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">MOV</span> <span class="built_in">AX</span>, [<span class="built_in">BX</span>]</span><br></pre></td></tr></tbody></table></figure>
+</li>
+<li><p>相对寄存器寻址</p>
+<p>可以在偏移地址中再指定偏移量</p>
+<figure class="highlight x86asm"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">MOV</span> <span class="built_in">AX</span>, [<span class="built_in">BX</span>+<span class="number">2H</span>]</span><br><span class="line"><span class="keyword">MOV</span> <span class="built_in">AX</span>, [<span class="built_in">BX</span>+<span class="built_in">SI</span>+<span class="number">2H</span>]</span><br></pre></td></tr></tbody></table></figure>
+</li>
+</ol>
+</body></html>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+        
+        <div class="post-tags">
+            <a href="/tags/汇编/" rel="tag"># 汇编</a>
+          
+            <a href="/tags/notes/" rel="tag"># notes</a>
+          
+        </div>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+              <a href="/2017/10/24/android-dev-art-note-01/" rel="next" title="《Android 开发艺术探索》笔记 - Activity - 01">
+                <i class="fa fa-chevron-left"></i> 《Android 开发艺术探索》笔记 - Activity - 01
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+              <a href="/2017/10/29/8086-assembly-02/" rel="prev" title="8086 汇编笔记 - 程序代码结构 - 02">
+                8086 汇编笔记 - 程序代码结构 - 02 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    
+  <div class="comments" id="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+  
+
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">devld</p>
+  <div class="site-description motion-element" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/devld" title="GitHub &rarr; https://github.com/devld" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://twitter.com/devldd" title="Twitter &rarr; https://twitter.com/devldd" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+    
+  </div>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#8086-寄存器"><span class="nav-number">1.</span> <span class="nav-text">8086 寄存器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据寻址方式"><span class="nav-number">2.</span> <span class="nav-text">数据寻址方式</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">devld</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.5.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.3.0</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+  
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.3.0"></script>
+
+  
+
+  
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://devldd.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://devld.me/2017/10/29/8086-assembly-01/";
+    this.page.identifier = "2017/10/29/8086-assembly-01/";
+    this.page.title = '8086 汇编笔记 - 寄存器/寻址 - 01';};
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://devldd.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+    $(function() {
+      var offsetTop = $('#comments').offset().top - $(window).height();
+      if (offsetTop <= 0) {
+        // load directly when there's no a scrollbar
+        window.addEventListener('load', loadComments, false);
+      } else {
+        $(window).on('scroll.disqus_scroll', function() {
+          // offsetTop may changes because of manually resizing browser window or lazy loading images.
+          var offsetTop = $('#comments').offset().top - $(window).height();
+          var scrollTop = $(window).scrollTop();
+
+          // pre-load comments a bit? (margin or anything else)
+          if (offsetTop - scrollTop < 60) {
+            $(window).off('.disqus_scroll');
+            loadComments();
+          }
+        });
+      }
+    });
+  
+</script>
+
+
+</body>
+</html>

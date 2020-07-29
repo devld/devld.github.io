@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.5.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png?v=7.3.0">
+  <link rel="mask-icon" href="/favicon.png?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    search: {
+      root: '/',
+      path: ''
+    },
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="去年心血来潮想搞个 NAS 放在家里，奈何囊肿羞涩，最终只能捡垃圾捡了个蜗牛星际，又因为种种原因吃了近一年的灰。最近又比较心血来潮，想起来了在角落中已经蒙尘的蜗牛星际。 在某宝上买的机子已经由卖家预装了黑群晖，用起来也是完全的傻瓜式操作，免去了自己折腾各种软件浪费时间。目前仅仅作为一个 samba 文件服务器，在局域网中共享一些视频或者其他资源。">
+<meta name="keywords" content="wireguard,vpn,linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 WireGuard 无缝接入内网">
+<meta property="og:url" content="https://devld.me/2020/07/27/wireguard-setup/index.html">
+<meta property="og:site_name" content="Devld">
+<meta property="og:description" content="去年心血来潮想搞个 NAS 放在家里，奈何囊肿羞涩，最终只能捡垃圾捡了个蜗牛星际，又因为种种原因吃了近一年的灰。最近又比较心血来潮，想起来了在角落中已经蒙尘的蜗牛星际。 在某宝上买的机子已经由卖家预装了黑群晖，用起来也是完全的傻瓜式操作，免去了自己折腾各种软件浪费时间。目前仅仅作为一个 samba 文件服务器，在局域网中共享一些视频或者其他资源。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://devld.me/2020/07/27/wireguard-setup/image-20200727151702974.png">
+<meta property="og:image" content="https://devld.me/2020/07/27/wireguard-setup/wireguard-network.svg">
+<meta property="og:updated_time" content="2020-07-29T05:04:12.604Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用 WireGuard 无缝接入内网">
+<meta name="twitter:description" content="去年心血来潮想搞个 NAS 放在家里，奈何囊肿羞涩，最终只能捡垃圾捡了个蜗牛星际，又因为种种原因吃了近一年的灰。最近又比较心血来潮，想起来了在角落中已经蒙尘的蜗牛星际。 在某宝上买的机子已经由卖家预装了黑群晖，用起来也是完全的傻瓜式操作，免去了自己折腾各种软件浪费时间。目前仅仅作为一个 samba 文件服务器，在局域网中共享一些视频或者其他资源。">
+<meta name="twitter:image" content="https://devld.me/2020/07/27/wireguard-setup/image-20200727151702974.png">
+  <link rel="canonical" href="https://devld.me/2020/07/27/wireguard-setup/">
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>使用 WireGuard 无缝接入内网 | Devld</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Devld</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+    <ul id="menu" class="menu">
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+    </ul>
+    
+
+</nav>
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://devld.me/2020/07/27/wireguard-setup/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="devld">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Devld">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">使用 WireGuard 无缝接入内网
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-07-27 10:54:48" itemprop="dateCreated datePublished" datetime="2020-07-27T10:54:48+00:00">2020-07-27</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-07-29 05:04:12" itemprop="dateModified" datetime="2020-07-29T05:04:12+00:00">2020-07-29</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/折腾/" itemprop="url" rel="index"><span itemprop="name">折腾</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+  
+  <span class="post-meta-item">
+    
+    <span class="post-meta-item-icon">
+      <i class="fa fa-comment-o"></i>
+    </span>
+    
+      <span class="post-meta-item-text">评论数：</span>
+    
+  
+    <a href="/2020/07/27/wireguard-setup/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/07/27/wireguard-setup/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+          <br>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <html><head></head><body><p>去年心血来潮想搞个 NAS 放在家里，奈何囊肿羞涩，最终只能捡垃圾捡了个蜗牛星际，又因为种种原因吃了近一年的灰。最近又比较心血来潮，想起来了在角落中已经蒙尘的蜗牛星际。</p>
+<p>在某宝上买的机子已经由卖家预装了黑群晖，用起来也是完全的傻瓜式操作，免去了自己折腾各种软件浪费时间。目前仅仅作为一个 <code>samba</code> 文件服务器，在局域网中共享一些视频或者其他资源。</p>
+<a id="more"></a>
+<p>OK，开始正题。现在需要支持在外面远程控制 NAS 下载一些东西。目前有这么几种方案：</p>
+<ul>
+<li><p>直接端口映射到内网的 NAS</p>
+<p>这种方案需要你有一个公网 IP，在路由器中将需要外网访问的端口直接映射到内网的 NAS 对应的端口上即可，操作也比较简单，速度则取决于你的上行带宽。</p>
+</li>
+<li><p>使用 <a href="https://github.com/fatedier/frp" target="_blank" rel="noopener">frp</a> 之类的内网穿透工具</p>
+<p>这种方案需要一个拥有公网 IP 的服务器，可以将内网的端口映射到这台服务器指定的端口，在外面直接访问服务器的端口即可。具体的配置方法也比较简单，在此不再赘述，这个方案的速度却决于你的这台服务器的带宽。</p>
+</li>
+<li><p>直接上 VPN</p>
+<p>这种方案也需要一个拥有公网 IP 的服务器，相较上面两种方案，这个可能不是那么的方便。但有个好处就是可以透明地访问整个内网的任意主机，速度也是取决于这台服务器的带宽。</p>
+</li>
+</ul>
+<p>考虑到后面可能会折腾好多东西(虽然目前就这一个)，干脆将搞个 VPN 直接支持整个内网的访问吧，这样也不用一个端口一个端口地去映射了。但缺点也显而易见，访问内网就得连接 VPN，还是有那么一点点麻烦。</p>
+<p>那么用哪个 VPN 方案呢？</p>
+<ul>
+<li>OpenVPN</li>
+<li>PPTP</li>
+<li>L2TP&IPSec</li>
+<li>WireGuard</li>
+</ul>
+<p>先说 OpenVPN，这个安全性是毋庸置疑的，可以说是非常安全。但缺点是配置繁琐，而且性能可能不大好。</p>
+<p>PPTP 和 L2TP 在大部分平台中都有内置，配置起来非常方便，性能也挺好的，但不是很安全。</p>
+<p>WireGuard 是一个极其迅速而且简单的 VPN，它的目标是更快，更简单，更小，并且比 IPSec 更好用(来自 WireGuard 官网)。目前 WireGuard 已经合并进入了 Linux 内核。</p>
+<p>可以看一下性能对比(来自 <a href="https://www.wireguard.com/performance/#results" target="_blank" rel="noopener">WireGuard 官网</a>)</p>
+<p><img src="/2020/07/27/wireguard-setup/image-20200727151702974.png" alt="image-20200727151702974"></p>
+<p>话不多说，开始安装吧。网络拓扑大致如下。</p>
+<p><img src="/2020/07/27/wireguard-setup/wireguard-network.svg" alt="wireguard-network"></p>
+<p>其中：</p>
+<ul>
+<li><code>1.1.1.1</code> 为服务器的公网 IP</li>
+<li><code>192.168.1.0/24</code> 为内网的 IP 段</li>
+<li><code>192.168.2.0/24</code> 为 WireGuard 的 VPN 内网网段</li>
+</ul>
+<p>最终实现的效果是，电脑和手机通过连接 <code>1.1.1.1</code> 上的 VPN 服务，接入其他两个网段。</p>
+<h2 id="安装-WireGuard"><a href="#安装-WireGuard" class="headerlink" title="安装 WireGuard"></a>安装 WireGuard</h2><p>WireGuard 不区分服务端与客户端，安装也比较简单，不出意外的话可以一行命令直接安装。</p>
+<p>具体可参考 <a href="https://www.wireguard.com/install/" target="_blank" rel="noopener">Installation - WireGuard</a>，基本上涵盖了大部分 Linux 发行版，Windows 以及 MacOS，也包含了 Android, iOS 的安装包。</p>
+<p>由于群晖不便于配置服务自启动（应该是我不会，没有 <code>systemd</code> 用的顺手），干脆在黑群晖中装个 Debian10 的虚拟机当作接入内网的网关（也就是上图中的 NAS）。</p>
+<p>WireGuard 使用 <code>wg</code> 命令来进行控制，并且提供了一个 <code>wg-quick</code> 命令，可用来快速管理 VPN 连接。</p>
+<h2 id="生成密钥"><a href="#生成密钥" class="headerlink" title="生成密钥"></a>生成密钥</h2><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生成私钥</span></span><br><span class="line">$ wg genkey > priv_key</span><br><span class="line">$ cat priv_key</span><br><span class="line">qNzPeN726rM8L+JiSYeqm5zi6VwFlaa4OZhaCNPa4Uk=</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成公钥</span></span><br><span class="line">$ wg pubkey < priv_key > pub_key <span class="comment"># 使用私钥来生成公钥</span></span><br><span class="line">$ cat pub_key</span><br><span class="line">NtMtwyEB6tsQxOA5Z6xhuQkhwTFXeGPmbnirCA4lqgw=</span><br></pre></td></tr></tbody></table></figure>
+<p>WireGuard 的服务端与客户端是对等的。生成密钥的步骤适用于服务端，也适用于客户端。</p>
+<h2 id="服务器端配置"><a href="#服务器端配置" class="headerlink" title="服务器端配置"></a>服务器端配置</h2><p>WireGuard 的配置文件一般情况下放在 <code>/etc/wireguard</code> 中，且为了安全考虑，需要将这个目录的所有者设置为 <code>root</code>，权限设置为 <code>700</code>。</p>
+<p>一般情况下，配置文件可依次命名为 <code>wgX.conf</code>，其中 <code>X</code> 为任意的编号，<code>wgX</code> 最终也是创建出来的网络接口的名称。</p>
+<p>此处，在服务端与客户端中，都将命名为 <code>wg0.conf</code></p>
+<p>先来看一下最基础的配置文件 <code>/etc/wireguard/wg0.conf</code></p>
+<figure class="highlight ini"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Interface]</span></span><br><span class="line"><span class="attr">Address</span> = <span class="number">192.168</span>.<span class="number">2.1</span>/<span class="number">32</span></span><br><span class="line"><span class="attr">ListenPort</span> = <span class="number">28385</span></span><br><span class="line"><span class="attr">PrivateKey</span> = Server private key</span><br><span class="line"></span><br><span class="line"><span class="section">[Peer]</span></span><br><span class="line"><span class="attr">PublicKey</span> = Client public key</span><br><span class="line"><span class="attr">AllowedIPs</span> = IP Range</span><br></pre></td></tr></tbody></table></figure>
+<p>就是这么简单。分为两种配置组：</p>
+<ul>
+<li><p><code>Interface</code></p>
+<p>这个配置项为本地接口的配置，其中：</p>
+<ul>
+<li><code>Address</code> 为 VPN 连接的本地 IP 地址</li>
+<li><code>ListenPort</code> 作为服务端需要声明一个监听的端口，WireGuard 使用 UDP 协议，这个端口可以任意填写。需要保证防火墙已开放 UDP 的这个端口</li>
+<li><code>PrivateKey</code> 为上一步生成的私钥</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><code>Peer</code></p>
+<p>这个为对端的配置，如果有多个，则需添加多个 <code>Peer</code> 配置，服务端的 <code>Peer</code> 配置项即定义了各个可连接的客户端。其中：</p>
+<ul>
+<li><code>PublicKey</code> 为对端的公钥</li>
+<li><code>AllowedIPs</code> 在<a href="#配置路由">配置路由</a>会讲到</li>
+</ul>
+</li>
+</ul>
+<h2 id="客户端配置"><a href="#客户端配置" class="headerlink" title="客户端配置"></a>客户端配置</h2><p>客户端的配置与服务端的配置基本一致。每个端都需要生成各自的密钥对。</p>
+<p>下面的为 NAS 的配置文件 <code>/etc/wireguard/wg0.conf</code></p>
+<figure class="highlight ini"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Interface]</span></span><br><span class="line"><span class="attr">PrivateKey</span> = Client private key</span><br><span class="line"><span class="attr">Address</span> = <span class="number">192.168</span>.<span class="number">2.2</span>/<span class="number">32</span></span><br><span class="line"></span><br><span class="line"><span class="section">[Peer]</span></span><br><span class="line"><span class="attr">PublicKey</span> = Server private key</span><br><span class="line"><span class="attr">AllowedIPs</span> = IP Range</span><br><span class="line"><span class="attr">Endpoint</span> = <span class="number">1.1</span>.<span class="number">1.1</span>:<span class="number">28385</span></span><br></pre></td></tr></tbody></table></figure>
+<p>客户端与服务端不同的地方在于：</p>
+<ul>
+<li><code>Interface</code> 配置中没有了 <code>ListenPort</code></li>
+<li><code>Peer</code> 即为服务端，与服务端不同的地方在于多了一个 <code>Endpoint</code></li>
+</ul>
+<p>一般情况下，只有主动发起连接的端需要在 <code>Peer</code> 中指定 <code>Endpoint</code>，此处为服务器的公网 IP 和监听的端口。</p>
+<p>基础的配置已经完成，现在可以直接使用 <code>wg-quick up wg0</code> 启动 VPN，其中 <code>wg0</code> 为配置文件的名称。</p>
+<h2 id="配置路由"><a href="#配置路由" class="headerlink" title="配置路由"></a>配置路由</h2><p>通过上面的配置成功启动 VPN 后，即使连接成功，也不能访问 <code>192.168.1.0/24</code> 和 <code>192.168.2.1/24</code> 网段，这是因为截至目前，我们仅仅配置了 VPN 隧道，但路由还没有配置，发出去的 IP 包不知道应该被发往哪去。</p>
+<p>按照预先设计的网络架构，在外面通往内网的流量大致流向为：</p>
+<figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">192.168.2.1(WireGuard 服务端) <------+ 192.168.2.X(客户端)</span><br><span class="line">       +</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  192.168.2.2(NAS)</span><br><span class="line">       +</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">192.168.1.0/24(内网网段)</span><br></pre></td></tr></tbody></table></figure>
+<p>按照上图所示，我们需要：</p>
+<ul>
+<li>外网客户端将发往 <code>192.168.1.0/24</code> 和 <code>192.168.2.0/24</code> 网段的包转发到服务端(即 <code>192.168.2.1</code>)</li>
+<li>服务端将  <code>192.168.1.0/24</code>(内网) 网段的包发给 NAS (即 <code>192.168.2.2</code>)</li>
+<li>NAS 将来自于 <code>192.168.2.0/24</code> 网段发往 <code>192.168.1.0/24</code> 网段的包进行 SNAT</li>
+</ul>
+<p>上面的配置中的 <code>AllowedIPs</code> 可以被认为是路由规则的定义。意思是：</p>
+<ul>
+<li>当出向包的目的 IP 为 <code>AllowedIPs</code> 定义的网段时，将该包从 VPN 隧道发送出去</li>
+<li>当从 VPN 隧道进来的包的源 IP 不匹配 <code>AllowedIPs</code> 定义的网段时，直接将包丢弃</li>
+</ul>
+<h3 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h3><p>所以按照上面的包转发规则，可以得出各个客户端 <code>Peer</code> 的 <code>AllowedIPs</code></p>
+<ul>
+<li>NAS <code>192.168.2.2/32, 192.168.1.0/24</code></li>
+<li>其他客户端 <code>192.168.2.x/32</code> 为各自的 IP 地址</li>
+</ul>
+<h3 id="配置-iptables"><a href="#配置-iptables" class="headerlink" title="配置 iptables"></a>配置 <code>iptables</code></h3><p>除了配置 <code>AllowedIPs</code> 外，在 Linux 中还需要配置 <code>iptables</code>。</p>
+<p>如果<code>iptables</code> 的 <code>filter</code> 表的 <code>FORWARD</code> 链的默认策略不是 <code>ACCEPT</code> 则还需要添加规则，使包可以被转发。</p>
+<p><strong>如果默认策略是 <code>ACCEPT</code> 则可以跳过这部分。</strong></p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ iptables -L filter -n -v</span><br><span class="line">Chain FORWARD (policy DROP 0 packets, 0 bytes)</span><br><span class="line"> pkts bytes target     prot opt <span class="keyword">in</span>     out     <span class="built_in">source</span>               destination</span><br><span class="line">...</span><br></pre></td></tr></tbody></table></figure>
+<p>虽然可以将 <code>iptables</code> 的默认策略改掉，但不推荐这样做。</p>
+<p>关于 <code>iptables</code> 的教程可以参考 <a href="http://www.zsythink.net/archives/tag/iptables/" target="_blank" rel="noopener">iptables | 朱双印博客</a></p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">iptables -I FORWARD -s 192.168.2.0/24 -i wg0 -d 192.168.2.0/24 -j ACCEPT <span class="comment"># 放行 VPN 网段</span></span><br><span class="line">iptables -I FORWARD -s 192.168.2.0/24 -i wg0 -d 192.168.1.0/24 -j ACCEPT <span class="comment"># 放行 VPN 转发到内网的流量</span></span><br><span class="line">iptables -I FORWARD -s 192.168.1.0/24 -i wg0 -d 192.168.2.0/24 -j ACCEPT <span class="comment"># 放行内网 转发到 VPN 的流量</span></span><br></pre></td></tr></tbody></table></figure>
+<p>在 WireGuard 的配置文件中，可以在 <code>Interface</code> 下指定多个 <code>PostUp</code> 和 <code>PostDown</code>，分别在 VPN 启动和停止后按照定义的顺序依次执行。</p>
+<p>服务端配置</p>
+<figure class="highlight ini"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Interface]</span></span><br><span class="line"><span class="attr">Address</span> = <span class="number">192.168</span>.<span class="number">2.1</span>/<span class="number">32</span></span><br><span class="line"><span class="attr">ListenPort</span> = <span class="number">28385</span></span><br><span class="line"><span class="attr">PrivateKey</span> = Server private key</span><br><span class="line"></span><br><span class="line"><span class="attr">PostUp</span> = iptables -I FORWARD -s <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -i wg0 -d <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -j ACCEPT</span><br><span class="line"><span class="attr">PostUp</span> = iptables -I FORWARD -s <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -i wg0 -d <span class="number">192.168</span>.<span class="number">1.0</span>/<span class="number">24</span> -j ACCEPT</span><br><span class="line"><span class="attr">PostUP</span> = iptables -I FORWARD -s <span class="number">192.168</span>.<span class="number">1.0</span>/<span class="number">24</span> -i wg0 -d <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -j ACCEPT</span><br><span class="line"></span><br><span class="line"><span class="attr">PostDown</span> = iptables -D FORWARD -s <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -i wg0 -d <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -j ACCEPT</span><br><span class="line"><span class="attr">PostDown</span> = iptables -D FORWARD -s <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -i wg0 -d <span class="number">192.168</span>.<span class="number">1.0</span>/<span class="number">24</span> -j ACCEPT</span><br><span class="line"><span class="attr">PostDown</span> = iptables -D FORWARD -s <span class="number">192.168</span>.<span class="number">1.0</span>/<span class="number">24</span> -i wg0 -d <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -j ACCEPT</span><br><span class="line"></span><br><span class="line"><span class="section">[Peer]</span></span><br><span class="line"><span class="attr">PublicKey</span> = Client public key</span><br><span class="line"><span class="attr">AllowedIPs</span> = IP Range</span><br></pre></td></tr></tbody></table></figure>
+<p>另外还需要开启 Linux 内核的 IP 包转发</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sysctl net.ipv4.ip_forward</span><br><span class="line">0</span><br></pre></td></tr></tbody></table></figure>
+<p>如果上面的输出为 <code>0</code> 则 Linux 内核默认会丢弃所有目的 IP 不为本机的包。</p>
+<p>编辑 <code>/etc/sysctl.conf</code>， 将 <code>net.ipv4.ip_forward = 0</code> 中的 <code>0</code> 改为 <code>1</code>。然后 <code>sysctl -p</code> 使其生效。</p>
+<h3 id="NAS"><a href="#NAS" class="headerlink" title="NAS"></a>NAS</h3><p>NAS 中的 <code>Peer</code> 为服务端，则 <code>AllowedIPs</code> 应为 <code>192.168.2.0/24</code>。</p>
+<p>同时，NAS 需要负责将来自 <code>192.168.2.0/24</code> 网段的发往 <code>192.168.1.0/24</code> 的包进行 SNAT。</p>
+<figure class="highlight ini"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Interface]</span></span><br><span class="line"><span class="attr">PrivateKey</span> = Client private key</span><br><span class="line"><span class="attr">Address</span> = <span class="number">192.168</span>.<span class="number">2.2</span>/<span class="number">32</span></span><br><span class="line"></span><br><span class="line"><span class="attr">PostUp</span> = iptables -t nat -A POSTROUTING -s <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -j SNAT --to-source <span class="number">192.168</span>.<span class="number">1.2</span></span><br><span class="line"><span class="attr">PostDown</span> = iptables -t nat -D POSTROUTING -s <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -j SNAT --to-source <span class="number">192.168</span>.<span class="number">1.2</span></span><br><span class="line"></span><br><span class="line"><span class="section">[Peer]</span></span><br><span class="line"><span class="attr">PublicKey</span> = Server public key</span><br><span class="line"><span class="attr">AllowedIPs</span> = <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span></span><br><span class="line"><span class="attr">Endpoint</span> = <span class="number">1.1</span>.<span class="number">1.1</span>:<span class="number">28385</span></span><br></pre></td></tr></tbody></table></figure>
+<p>注意其中的 <code>--to-source 192.168.1.2</code> 的 IP 地址为 NAS 在内网中的 IP 地址。</p>
+<p>同样，在 NAS 上，也需要确认已开启包转发。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>最终的配置文件如下</p>
+<ul>
+<li><p>服务端</p>
+<figure class="highlight ini"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Interface]</span></span><br><span class="line"><span class="attr">Address</span> = <span class="number">192.168</span>.<span class="number">2.1</span>/<span class="number">32</span></span><br><span class="line"><span class="attr">ListenPort</span> = <span class="number">28385</span></span><br><span class="line"><span class="attr">PrivateKey</span> = <Server private key></span><br><span class="line"></span><br><span class="line"><span class="attr">PostUp</span> = iptables -I FORWARD -s <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -i wg0 -d <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -j ACCEPT</span><br><span class="line"><span class="attr">PostUp</span> = iptables -I FORWARD -s <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -i wg0 -d <span class="number">192.168</span>.<span class="number">1.0</span>/<span class="number">24</span> -j ACCEPT</span><br><span class="line"><span class="attr">PostUP</span> = iptables -I FORWARD -s <span class="number">192.168</span>.<span class="number">1.0</span>/<span class="number">24</span> -i wg0 -d <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -j ACCEPT</span><br><span class="line"></span><br><span class="line"><span class="attr">PostDown</span> = iptables -D FORWARD -s <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -i wg0 -d <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -j ACCEPT</span><br><span class="line"><span class="attr">PostDown</span> = iptables -D FORWARD -s <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -i wg0 -d <span class="number">192.168</span>.<span class="number">1.0</span>/<span class="number">24</span> -j ACCEPT</span><br><span class="line"><span class="attr">PostDown</span> = iptables -D FORWARD -s <span class="number">192.168</span>.<span class="number">1.0</span>/<span class="number">24</span> -i wg0 -d <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -j ACCEPT</span><br><span class="line"></span><br><span class="line"><span class="comment"># NAS</span></span><br><span class="line"><span class="section">[Peer]</span></span><br><span class="line"><span class="attr">PublicKey</span> = <Client public key></span><br><span class="line"><span class="attr">AllowedIPs</span> = <span class="number">192.168</span>.<span class="number">2.2</span>/<span class="number">32</span>, <span class="number">192.168</span>.<span class="number">1.0</span>/<span class="number">24</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 其他客户端 ...</span></span><br><span class="line"><span class="section">[Peer]</span></span><br><span class="line"><span class="attr">PublicKey</span> = <Client public key></span><br><span class="line"><span class="attr">AllowedIPs</span> = <span class="number">192.168</span>.<span class="number">2</span>.x/<span class="number">32</span></span><br></pre></td></tr></tbody></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>NAS </p>
+  <figure class="highlight ini"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Interface]</span></span><br><span class="line"><span class="attr">PrivateKey</span> = <Client private key></span><br><span class="line"><span class="attr">Address</span> = <span class="number">192.168</span>.<span class="number">2.2</span>/<span class="number">32</span></span><br><span class="line"></span><br><span class="line"><span class="attr">PostUp</span> = iptables -t nat -A POSTROUTING -s <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -j SNAT --to-source <span class="number">192.168</span>.<span class="number">1.2</span></span><br><span class="line"><span class="attr">PostDown</span> = iptables -t nat -D POSTROUTING -s <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span> -j SNAT --to-source <span class="number">192.168</span>.<span class="number">1.2</span></span><br><span class="line"></span><br><span class="line"><span class="section">[Peer]</span></span><br><span class="line"><span class="attr">PublicKey</span> = <Server public key></span><br><span class="line"><span class="attr">AllowedIPs</span> = <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span></span><br><span class="line"><span class="attr">Endpoint</span> = <span class="number">1.1</span>.<span class="number">1.1</span>:<span class="number">28385</span></span><br></pre></td></tr></tbody></table></figure>
+</li>
+<li><p>其他客户端</p>
+<figure class="highlight ini"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Interface]</span></span><br><span class="line"><span class="attr">PrivateKey</span> = <Client private key></span><br><span class="line"><span class="attr">Address</span> = <span class="number">192.168</span>.<span class="number">2</span>.X/<span class="number">32</span></span><br><span class="line"></span><br><span class="line"><span class="section">[Peer]</span></span><br><span class="line"><span class="attr">PublicKey</span> = <Server public key></span><br><span class="line"><span class="attr">AllowedIPs</span> = <span class="number">192.168</span>.<span class="number">2.0</span>/<span class="number">24</span>, <span class="number">192.168</span>.<span class="number">1.0</span>/<span class="number">24</span></span><br><span class="line"><span class="attr">Endpoint</span> = <span class="number">1.1</span>.<span class="number">1.1</span>:<span class="number">28385</span></span><br></pre></td></tr></tbody></table></figure>
+</li>
+</ul>
+<p>在各个机器上分别启动服务</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wg-quick up wg0</span><br></pre></td></tr></tbody></table></figure>
+<p>通过 <code>wg</code> 命令可查看当前状态</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> wg <span class="comment"># 服务端</span></span></span><br><span class="line">interface: wg0</span><br><span class="line">  public key: Public key</span><br><span class="line">  private key: (hidden)</span><br><span class="line">  listening port: 28385</span><br><span class="line"></span><br><span class="line">peer: Client public key # NAS</span><br><span class="line">  endpoint: x.x.x.x:41995</span><br><span class="line">  allowed ips: 192.168.2.2/32, 192.168.1.0/24</span><br><span class="line">  latest handshake: 36 seconds ago</span><br><span class="line">  transfer: 132.48 KiB received, 49.25 KiB sent</span><br><span class="line"></span><br><span class="line">peer: Client public key # 外网的电脑</span><br><span class="line">  endpoint: x.x.x.x:60941</span><br><span class="line">  allowed ips: 192.168.2.3/32</span><br><span class="line">  latest handshake: 1 minute, 11 seconds ago</span><br><span class="line">  transfer: 62.54 KiB received, 124.75 KiB sent</span><br><span class="line">  </span><br><span class="line"><span class="meta">#</span><span class="bash"> ...</span></span><br></pre></td></tr></tbody></table></figure>
+<p>在外网尝试 ping 一下内网的主机</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ ping 192.168.1.1 <span class="comment"># 路由器</span></span><br><span class="line">PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.</span><br><span class="line">64 bytes from 192.168.1.1: icmp_seq=1 ttl=63 time=113 ms</span><br><span class="line">64 bytes from 192.168.1.1: icmp_seq=2 ttl=63 time=90.10 ms</span><br><span class="line"><span class="comment"># ...</span></span><br></pre></td></tr></tbody></table></figure>
+<p>OK，完成，现在可以访问任意内网的机器了。</p>
+</body></html>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+        
+        <div class="post-tags">
+            <a href="/tags/wireguard/" rel="tag"># wireguard</a>
+          
+            <a href="/tags/vpn/" rel="tag"># vpn</a>
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+        </div>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+              <a href="/2018/03/29/cpp-learning-01/" rel="next" title="C++ 类与类继承">
+                <i class="fa fa-chevron-left"></i> C++ 类与类继承
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+          </div>
+        </div>
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    
+  <div class="comments" id="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+  
+
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">devld</p>
+  <div class="site-description motion-element" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/devld" title="GitHub &rarr; https://github.com/devld" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://twitter.com/devldd" title="Twitter &rarr; https://twitter.com/devldd" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+    
+  </div>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装-WireGuard"><span class="nav-number">1.</span> <span class="nav-text">安装 WireGuard</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生成密钥"><span class="nav-number">2.</span> <span class="nav-text">生成密钥</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器端配置"><span class="nav-number">3.</span> <span class="nav-text">服务器端配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端配置"><span class="nav-number">4.</span> <span class="nav-text">客户端配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置路由"><span class="nav-number">5.</span> <span class="nav-text">配置路由</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务端"><span class="nav-number">5.1.</span> <span class="nav-text">服务端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置-iptables"><span class="nav-number">5.2.</span> <span class="nav-text">配置 iptables</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NAS"><span class="nav-number">5.3.</span> <span class="nav-text">NAS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">devld</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.5.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.3.0</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+  
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.3.0"></script>
+
+  
+
+  
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://devldd.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://devld.me/2020/07/27/wireguard-setup/";
+    this.page.identifier = "2020/07/27/wireguard-setup/";
+    this.page.title = '使用 WireGuard 无缝接入内网';};
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://devldd.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+    $(function() {
+      var offsetTop = $('#comments').offset().top - $(window).height();
+      if (offsetTop <= 0) {
+        // load directly when there's no a scrollbar
+        window.addEventListener('load', loadComments, false);
+      } else {
+        $(window).on('scroll.disqus_scroll', function() {
+          // offsetTop may changes because of manually resizing browser window or lazy loading images.
+          var offsetTop = $('#comments').offset().top - $(window).height();
+          var scrollTop = $(window).scrollTop();
+
+          // pre-load comments a bit? (margin or anything else)
+          if (offsetTop - scrollTop < 60) {
+            $(window).off('.disqus_scroll');
+            loadComments();
+          }
+        });
+      }
+    });
+  
+</script>
+
+
+</body>
+</html>

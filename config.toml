@@ -1,0 +1,13 @@
+baseURL = 'http://example.org/'
+languageCode = 'zh-cn'
+title = 'My New Hugo Site'
+theme = 'paper'
+
+[params]
+color = 'light'
+rss = true
+
+[markup]
+[markup.highlight]
+lineNos = true
+style = 'onedark'

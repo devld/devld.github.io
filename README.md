@@ -1,1 +1,1 @@
-# hugo-example
+# blog-source-hugo

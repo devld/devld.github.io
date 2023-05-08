@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>vpn on Devld</title><link>/tags/vpn/</link><description>Recent content in vpn on Devld</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Mon, 27 Jul 2020 10:54:48 +0800</lastBuildDate><atom:link href="/tags/vpn/index.xml" rel="self" type="application/rss+xml"/><item><title>使用 WireGuard 无缝接入内网</title><link>/2020/07/27/wireguard-setup/</link><pubDate>Mon, 27 Jul 2020 10:54:48 +0800</pubDate><guid>/2020/07/27/wireguard-setup/</guid><description>去年心血来潮想搞个 NAS 放在家里，奈何囊肿羞涩，最终只能捡垃圾捡了个蜗牛星际，又因为种种原因吃了近一年的灰。最近又比较心血来潮，想起来了在角落中已经蒙尘的蜗牛星际。
+在某宝上买的机子已经由卖家预装了黑群晖，用起来也是完全的傻瓜式操作，免去了自己折腾各种软件浪费时间。目前仅仅作为一个 samba 文件服务器，在局域网中共享一些视频或者其他资源。
+OK，开始正题。现在需要支持在外面远程控制 NAS 下载一些东西。目前有这么几种方案：
+直接端口映射到内网的 NAS
+这种方案需要你有一个公网 IP，在路由器中将需要外网访问的端口直接映射到内网的 NAS 对应的端口上即可，操作也比较简单，速度则取决于你的上行带宽。
+使用 frp 之类的内网穿透工具
+这种方案需要一个拥有公网 IP 的服务器，可以将内网的端口映射到这台服务器指定的端口，在外面直接访问服务器的端口即可。具体的配置方法也比较简单，在此不再赘述，这个方案的速度却决于你的这台服务器的带宽。
+直接上 VPN
+这种方案也需要一个拥有公网 IP 的服务器，相较上面两种方案，这个可能不是那么的方便。但有个好处就是可以透明地访问整个内网的任意主机，速度也是取决于这台服务器的带宽。
+考虑到后面可能会折腾好多东西(虽然目前就这一个)，干脆将搞个 VPN 直接支持整个内网的访问吧，这样也不用一个端口一个端口地去映射了。但缺点也显而易见，访问内网就得连接 VPN，还是有那么一点点麻烦。
+那么用哪个 VPN 方案呢？
+OpenVPN PPTP L2TP&amp;amp;IPSec WireGuard 先说 OpenVPN，这个安全性是毋庸置疑的，可以说是非常安全。但缺点是配置繁琐，而且性能可能不大好。
+PPTP 和 L2TP 在大部分平台中都有内置，配置起来非常方便，性能也挺好的，但不是很安全。
+WireGuard 是一个极其迅速而且简单的 VPN，它的目标是更快，更简单，更小，并且比 IPSec 更好用(来自 WireGuard 官网)。目前 WireGuard 已经合并进入了 Linux 内核。
+可以看一下性能对比(来自 WireGuard 官网)
+话不多说，开始安装吧。网络拓扑大致如下。
+其中：
+1.1.1.1 为服务器的公网 IP 192.168.1.0/24 为内网的 IP 段 192.168.2.0/24 为 WireGuard 的 VPN 内网网段 最终实现的效果是，电脑和手机通过连接 1.</description></item></channel></rss>

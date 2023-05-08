@@ -1,0 +1,193 @@
+<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#fff lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>8086 汇编笔记 - 常用指令 - 03 - Devld</title><meta name=theme-color><meta name=description content="数据传送 MOV dest, src 将 src 中的数据传送至 dest.
+MOV AX, BX ; CPU 的通用寄存器之间的数据传送 MOV AX, 1234H ; 立即数 -> 寄存器 MOV DS:[1234H] 5678H ; 立即数 -> 存储单元 MOV AX, DS:[1234H] ; 存储单元 -> 寄存器 MOV DS:[1234H], BX ; 寄存器 -> 存储单元 MOV AX, ES ; 段寄存器 -> 通用寄存器 MOV DS, AX ; 通用寄存器 -> 段寄存器 MOV ES, DS:[BX] ; 存储单元 -> 段寄存器 MOV DS:[1234H], CS ; 段寄存器 -> 存储单元 MOV WORD PTR DS:[0], 12H ; 将 12H 当作 字型数据 放入 DS:[0] 使用 MOV 指令时需注意以下几点:"><meta name=author content="Devld"><link rel="preload stylesheet" as=style href=/main.min.css><script defer src=highlight.min.js onload=hljs.initHighlightingOnLoad()></script>
+<link rel=preload as=image href=theme.png><link rel=preload as=image href=github.svg><link rel=preload as=image href=rss.svg><link rel=icon href=favicon.ico><link rel=apple-touch-icon href=apple-touch-icon.png><meta name=generator content="Hugo 0.111.3"><meta property="og:title" content="8086 汇编笔记 - 常用指令 - 03"><meta property="og:description" content="数据传送 MOV dest, src 将 src 中的数据传送至 dest.
+MOV AX, BX ; CPU 的通用寄存器之间的数据传送 MOV AX, 1234H ; 立即数 -> 寄存器 MOV DS:[1234H] 5678H ; 立即数 -> 存储单元 MOV AX, DS:[1234H] ; 存储单元 -> 寄存器 MOV DS:[1234H], BX ; 寄存器 -> 存储单元 MOV AX, ES ; 段寄存器 -> 通用寄存器 MOV DS, AX ; 通用寄存器 -> 段寄存器 MOV ES, DS:[BX] ; 存储单元 -> 段寄存器 MOV DS:[1234H], CS ; 段寄存器 -> 存储单元 MOV WORD PTR DS:[0], 12H ; 将 12H 当作 字型数据 放入 DS:[0] 使用 MOV 指令时需注意以下几点:"><meta property="og:type" content="article"><meta property="og:url" content="/2017/11/16/8086-assembly-03/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2017-11-16T12:47:00+08:00"><meta property="article:modified_time" content="2017-11-16T12:47:00+08:00"><meta itemprop=name content="8086 汇编笔记 - 常用指令 - 03"><meta itemprop=description content="数据传送 MOV dest, src 将 src 中的数据传送至 dest.
+MOV AX, BX ; CPU 的通用寄存器之间的数据传送 MOV AX, 1234H ; 立即数 -> 寄存器 MOV DS:[1234H] 5678H ; 立即数 -> 存储单元 MOV AX, DS:[1234H] ; 存储单元 -> 寄存器 MOV DS:[1234H], BX ; 寄存器 -> 存储单元 MOV AX, ES ; 段寄存器 -> 通用寄存器 MOV DS, AX ; 通用寄存器 -> 段寄存器 MOV ES, DS:[BX] ; 存储单元 -> 段寄存器 MOV DS:[1234H], CS ; 段寄存器 -> 存储单元 MOV WORD PTR DS:[0], 12H ; 将 12H 当作 字型数据 放入 DS:[0] 使用 MOV 指令时需注意以下几点:"><meta itemprop=datePublished content="2017-11-16T12:47:00+08:00"><meta itemprop=dateModified content="2017-11-16T12:47:00+08:00"><meta itemprop=wordCount content="1154"><meta itemprop=keywords content="汇编,notes,"><meta name=twitter:card content="summary"><meta name=twitter:title content="8086 汇编笔记 - 常用指令 - 03"><meta name=twitter:description content="数据传送 MOV dest, src 将 src 中的数据传送至 dest.
+MOV AX, BX ; CPU 的通用寄存器之间的数据传送 MOV AX, 1234H ; 立即数 -> 寄存器 MOV DS:[1234H] 5678H ; 立即数 -> 存储单元 MOV AX, DS:[1234H] ; 存储单元 -> 寄存器 MOV DS:[1234H], BX ; 寄存器 -> 存储单元 MOV AX, ES ; 段寄存器 -> 通用寄存器 MOV DS, AX ; 通用寄存器 -> 段寄存器 MOV ES, DS:[BX] ; 存储单元 -> 段寄存器 MOV DS:[1234H], CS ; 段寄存器 -> 存储单元 MOV WORD PTR DS:[0], 12H ; 将 12H 当作 字型数据 放入 DS:[0] 使用 MOV 指令时需注意以下几点:"></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-0.5 text-3xl font-bold" href=/>Devld</a><div class="btn-dark text-[0] ml-6 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg=`"#fff"`.replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:mt-0 lg:ml-12 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/devld target=_blank rel=me>github</a>
+<a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./rss.svg) href=index.xml target=_blank rel=alternate>rss</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pt-16 pb-24 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">8086 汇编笔记 - 常用指令 - 03</h1><div class="text-sm opacity-60"><time>2017-11-16</time>
+<span class="inline-flex flex-wrap ml-6"><a class="ml-1.5 no-underline" href=categories/%E6%B1%87%E7%BC%96>汇编</a></span></div></header><section><h3 id=数据传送>数据传送</h3><ol><li>MOV dest, src</li></ol><p>将 src 中的数据传送至 dest.</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>MOV AX, BX  ; CPU 的通用寄存器之间的数据传送
+MOV AX, 1234H ; 立即数 -&gt; 寄存器
+MOV DS:[1234H] 5678H  ; 立即数 -&gt; 存储单元
+
+MOV AX, DS:[1234H]  ; 存储单元 -&gt; 寄存器
+MOV DS:[1234H], BX  ; 寄存器 -&gt; 存储单元
+
+MOV AX, ES  ; 段寄存器 -&gt; 通用寄存器
+MOV DS, AX  ; 通用寄存器 -&gt; 段寄存器
+MOV ES, DS:[BX] ; 存储单元 -&gt; 段寄存器
+MOV DS:[1234H], CS  ; 段寄存器 -&gt; 存储单元
+
+MOV WORD PTR DS:[0], 12H ; 将 12H 当作 字型数据 放入 DS:[0]
+</code></pre><p>使用 MOV 指令时需注意以下几点:</p><ul><li><p>MOV 可传送 8 位或 16 位数据, 取决于寄存器.</p><p>如果 MOV 指令中无法判断出操作数的位数, 则需要显式声明数据位数.
+比如上面代码的最后一行, 表明操作数是一个 16 位的字型数据, 相应的还有 <code>BYTE PTR</code> 字节型数据.</p></li><li><p>一条 MOV 指令无法在存储单元与存储单元之间传送数据.</p></li><li><p>CS 和 IP 不能作为 dest.</p></li><li><p>不能在段寄存器之间传送数据. 比如 <code>MOV DS, ES</code> 会报错.</p></li><li><p>立即数不能作为 dest.</p></li><li><p>不能向段寄存器传送立即数. 比如 <code>MOV DS, 1234H</code> 会报错. 可以通过通用寄存器作为中转.</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>MOV AX, 1234H
+MOV DS, AX
+</code></pre></li></ul><ol start=2><li>XCHG dest, src</li></ol><p>用于交换数据, 相当于三条 MOV 指令. 指令中的两个操作数可以是两个寄存器或寄存器与存储单元.</p><p>使用 XCHG 需要注意以下几点:</p><ul><li><p>两个操作数不能同时为存储单元</p></li><li><p>任何一个操作数都不能为段寄存器和立即数</p></li></ul><ol start=3><li>LEA r16, mem</li></ol><p>取有效地址送入 16 位寄存器 r16.</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>LEA SP, [BP][DI]  ; 将 [BP+DI] 寻址方式的偏移地址送入 SP
+</code></pre><p>下面的代码的作用相同, 但后一条指令使用了 OFFSET 伪指令, 由编译器在编译时赋值.</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>LEA BX, VAR
+MOV BX, OFFSET VAR
+</code></pre><ol start=4><li>LDS 和 LES</li></ol><pre tabindex=0><code class=language-x86asm data-lang=x86asm>LDS dest, src
+LES dest, src
+</code></pre><p>装入地址指令</p><p>LDS 和 LES 都将 src 指向的内存中连续的 4B 内容的低 16 位送入 dest 指定的通用寄存器.
+LDS 将 上述 4B 的高16为装入 DS, LES 则装入 ES.</p><p>dest 必须是通用寄存器, src 比如是内存操作数.</p><ol start=5><li>LAHF 和 SAHF</li></ol><p>标志传送指令</p><p>LAHF 将<a href=/2017/10/29/8086-assembly-01/#8086-%E5%AF%84%E5%AD%98%E5%99%A8>标志寄存器</a>的低 8 位放入 AH</p><p><img src=lahf-flags-to-ah.png alt=LAHF></p><p>SAHF 将 AH 的内容送入标志寄存器的低 8 位</p><ol start=6><li>PUSH 和 POP</li></ol><pre tabindex=0><code class=language-x86asm data-lang=x86asm>PUSH src
+POP  dest
+</code></pre><p>操作堆栈</p><p>src 和 dest 可以为 寄存器或存储单元</p><p>PUSH 将 src 中的 16 位数据放入 SS:[SP] 的位置, 并将 SP - 2.
+POP 将 SS:[SP] 的 16 位数据放入 dest, 并将 SP + 2.</p><ol start=7><li>CBW 和 CWD</li></ol><p>字扩展指令 CBW</p><p>将 AL 中的字节数据扩展到字型数据, 高 8 位 放入 AH.</p><p>字扩展双字指令 CWD</p><p>将 AX 中的字型数据扩展到双字型, 高 16 位放入 DX.</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>MOV AL, 12H
+CBW ; AL 符号位为 0, 所以 0 -&gt; AH
+
+MOV AL, AAH
+CBW ; AL 符号位为 1, 所以 FF -&gt; AH
+
+MOV AX, 1234H
+CWD ; 0 -&gt; DX
+
+MOV AX, AAAAH
+CWD; FFFF -&gt; DX
+</code></pre><h3 id=算术运算指令>算术运算指令</h3><ol><li>加法</li></ol><ul><li><p>不带进位加法</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>ADD dest, src ; (src) + (dest)  -&gt; dest
+</code></pre><ul><li>ADD 指令的 src 和 dest 不能同时为两个存储单元</li><li>段寄存器之间也不能相加</li><li>主要影响 CF, ZF, OF, SF 标志寄存器</li></ul></li><li><p>带进位的加法</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>ADC dest, src ; (src) + (dest) + (CF) -&gt; dest
+</code></pre></li><li><p>加 1 指令</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>INC reg/mem ; (reg/mem) + 1 -&gt; reg/mem
+</code></pre><ul><li>操作数可以是寄存器或存储单元, 但不能为立即数</li><li>影响 AF, OF, PF, SF, ZF, 但不影响 CF</li><li>INC 指令会将操作数视为无符号数</li></ul></li></ul><ol start=2><li>减法</li></ol><ul><li><p>不带进位减法</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>SUB dest, src ; (dest) - (src) -&gt; dest
+</code></pre></li><li><p>带进位减法</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>SBB dest, src ; (dest) - (src) - (CF) -&gt; dest
+</code></pre></li><li><p>减 1 指令</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>DEC reg/mem ; (reg/mem) - 1 -&gt; reg/mem
+</code></pre><p>DEC 指令不影响 CF 标志.</p></li></ul><ol start=3><li>取补</li></ol><pre tabindex=0><code class=language-x86asm data-lang=x86asm>NEG reg/mem ; 0 - (reg/mem) -&gt; reg/mem
+</code></pre><p>将操作数以及符号为逐位取反, 然后加 1.</p><ol start=4><li>乘法</li></ol><ul><li><p>无符号乘法</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>MUL reg/mem
+</code></pre><p>如果操作数为 8 位, (AL) * (reg/mem) -> AX
+如果操作数为 16 位, (AX) * (reg/mem) - > DX, AX</p></li><li><p>有符号乘法</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>IMUL reg/mem
+</code></pre></li></ul><ol start=5><li>除法</li></ol><ul><li><p>无符号除法</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>DIV src
+</code></pre><ul><li><p>当 src 为 8 位时</p><p>(AX) / (src) 的商 -> AL
+(AX) / (src) 的余 -> AH</p></li><li><p>当 src 为 16 位时</p><p>(DX, AX) / (src) 的商 -> AX
+(DX, AX) / (src) 的余 -> DX</p></li></ul><p>注意: 当除法的商过大(超过 AL, AX 的范围时, 会产生异常中断)</p><p><img src=8086-asm-div-overflow.png alt="Divide overflow"></p></li><li><p>有符号除法</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>IDIV src
+</code></pre><p>与 DIV 功能相同, 但除数, 被除数都被当作有符号数.</p></li></ul><ol start=6><li>比较指令</li></ol><pre tabindex=0><code class=language-x86asm data-lang=x86asm>CMP dest, src ; (dest) - (src)
+</code></pre><p>将目标操作数与源操作数相减, 不送回结果, 只更改标志位.</p><ul><li><p>判断两数相等</p><p>根据 ZF 标志位, 若 ZF = 1 则 相等</p></li><li><p>判断无符号数大小</p><p>根据 CF 标志位, 若 CF = 1, 则 (dest) &lt; (src)</p></li><li><p>判断有符号数大小</p><p>可根据 SF 和 OF 标志判断, 若 SF ⊕ OF = 1, 即 SF 与 OF 不同时, dest &lt; src</p></li></ul><h3 id=逻辑指令>逻辑指令</h3><pre tabindex=0><code class=language-x86asm data-lang=x86asm>AND   dest, src ; 按位且 (dest) &amp; (src) -&gt; dest
+OR    dest, src ; 按位或 (dest) | (src) -&gt; dest
+XOR   dest, src ; 按位异或 (dest) ^ (src) -&gt; dest
+NOT   reg/mem   ; 按位取反 ~(reg/mem) -&gt; reg/mem
+TEST  dest, src ; 按位与, 只设置标志位
+</code></pre><h3 id=移位指令>移位指令</h3><pre tabindex=0><code class=language-x86asm data-lang=x86asm>SAL   reg/mem, 1/CL ; 算数左移
+SAR   reg/mem, 1/CL ; 算数右移
+
+SHL   reg/mem, 1/CL ; 逻辑左移
+SHR   reg/mem, 1/CL ; 逻辑右移
+
+; 算数左/右移与逻辑左/右移的区别在于前者会保持符号位不变.
+
+ROL   reg/mem, 1/CL ; 循环左移
+ROR   reg/mem, 1/CL ; 循环右移
+
+RCL   reg/mem, 1/CL ; 带进位循环左移
+RCR   reg/mem, 1/CL ; 带进位循环左移
+
+; 带进位与不带进位的区别是
+; RCL/RCR 将 CF 标志位也加入了移位操作中
+; 变成了 9 位 的循环移位操作
+</code></pre><h3 id=处理器指令>处理器指令</h3><pre tabindex=0><code class=language-x86asm data-lang=x86asm>CLC   ; 0 -&gt; CF
+STC   ; 1 -&gt; CF
+
+CLD   ; 0 -&gt; DF
+STD   ; 1 -&gt; DF
+
+CLI   ; 0 -&gt; IF
+STI   ; 1 -&gt; IF
+
+CMC   ; !CF -&gt; CF, CF 取反
+</code></pre><h3 id=转移指令>转移指令</h3><ul><li><p>无条件转移指令</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>JMP   dest
+JMP   reg/m16
+</code></pre><p>JMP 分为三种转移方式</p><ul><li><p>短转移</p><p>在段内短距离(-128 ~ 127)转移</p></li><li><p>段内转移</p><p>CS 不变, 给出转移的 16 位偏移地址</p></li><li><p>段间转移</p><p>CS 和 IP 都改变的转移
+给出一个双字的数据, 低 16 位 -> IP, 高 16 位 -> CS</p></li></ul></li><li><p>条件转移指令</p><ul><li><p>无符号数</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>JZ
+JE  ; ZF = 1
+
+JNE
+JNZ ; ZF = 0
+
+JA
+JNBE  ; CF = 0 &amp;&amp; ZF = 0
+; Jump if Not Below or Equal
+
+JAE
+JNB   ; CF = 0
+; Jump if Not Below
+
+JB
+JNAE  ; CF = 1 &amp;&amp; ZF = 0
+; Jump if Not Above or Equal
+
+JBE
+JNA   ; CF = 1
+; Jump if Not Above
+</code></pre></li><li><p>有符号数</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>JG
+JNLE  ; SF = OF &amp;&amp; ZF = 0
+; Jump if Not Less or Equal
+
+JGE
+JNL   ; SF = OF
+; Jump if Not Less
+
+JL
+JNGE  ; SF != OF
+; Jump if Not Greater or Equal
+
+JLE
+JNG   ; SF != OF || ZF = 1
+; Jump if Not Greater
+</code></pre></li><li><p>特殊算数标志位</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>JC    ; CF = 1
+JNC   ; CF = 0
+
+JO    ; OF = 1
+JNO   ; OF = 0
+
+JP
+JPE   ; PF = 1
+JNP
+JPO   ; PF = 0
+
+JS    ; SF = 1
+JNS   ; SF = 0
+
+JCXZ  ; CX = 0
+</code></pre></li></ul></li></ul><h3 id=循环指令>循环指令</h3><ol><li>LOOP label</li></ol><p>执行 LOOP 指令时, 处理器会先将 CX - 1, 然后判断 若 CX != 0, 则继续循环, 否则退出循环.</p><ol start=2><li>LOOPE/LOOPZ label</li></ol><p>与 LOOP 相同, 首先 CX - 1 (ZF 不受影响), 然后判断:</p><pre tabindex=0><code>  若 CX = 0
+    跳出循环
+  否则
+    若 ZF = 0
+      跳出循环
+    否则
+      继续循环
+</code></pre><ol start=3><li>LOOPNE/LOOPNZ label</li></ol><p>与 LOOPE/LOOPZ 不同的地方在 当 ZF = 1 时跳出循环</p><h3 id=串处理操作指令>串处理操作指令</h3><pre tabindex=0><code class=language-x86asm data-lang=x86asm>MOVSB
+MOVSW
+; 将 DS:SI 所指向的 字节/字 数据传送到 ES:DI 指向的位置
+; 然后根据 DF 的值确定 递增(DF = 0)或递减(DF = 1) SI 与 DI 的值
+
+CMPSB
+CMPSW
+; 将 SI 指向的 字节/字 数据与 DI 指向的数据相减比较
+; 然后设置相关的标志位(AF, CF, OF, PF, SF, ZF)
+; 然后根据 DF 改变 SI 与 DI
+
+SCASB
+SCASW
+; 将 AL/AX 的内容与 DI 指向的数据相减比较, 设置标志位
+; 然后根据 DF 改变 DI
+
+LODSB
+LODSW
+; 将 SI 指向的 字节/字 数据放入 AL/AX
+
+STOSB
+STOSW
+; 将 AL/AX 的内容放入 DI 指向的内存单元
+; 然后根据 DF 改变 DI
+</code></pre><p>重复前缀</p><ul><li><p>REP</p><p>无条件执行跟在后面的指令, 由 CX 指定重复次数</p></li><li><p>REPE/REPZ</p><p>当后面的指令的结果使 ZF = 1 时, 重复执行, 并且由 CX 指定最大重复次数
+该指令与 CMPS 和 SCAS 配合使用</p></li><li><p>REPNE/REPNZ</p><p>与 REPE/REPZ 条件相反, ZF = 0 时, 重复执行</p></li></ul><h3 id=子程序调用返回指令>子程序调用返回指令</h3><ul><li><p>定义子程序</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>&lt;name&gt; PROC [NEAR/FAR]
+    ; code
+&lt;name&gt; ENDP
+</code></pre></li><li><p>子程序的调用</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>CALL &lt;name&gt;
+</code></pre><p>根据调用出近调用还是远调用, 将 IP / (CS, IP) 压入栈中, 然后转去执行子程序.</p></li><li><p>返回指令</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>RET [n]
+</code></pre><p>将堆栈顶部的 IP / (IP, CS) 弹出, 然后返回到调用的地方.
+如果指定了参数 n, 则在弹出堆栈之后, (SP) + n -> SP.</p></li></ul><h3 id=8086-软中断>8086 软中断</h3><pre tabindex=0><code class=language-x86asm data-lang=x86asm>INT n
+</code></pre><p>执行这条指令时 CPU 会将标志寄存器压入堆栈,
+禁止新的可屏蔽中断和单步中断(IF = 0, TF = 0),
+并将当前的 CS 和 IP 压入堆栈.
+然后会在 0000H 段中的偏移地址为 4n 的地方找到中断处理程序的 CS 和 IP.
+4n 处为 IP, 4n + 2 处为 CS, 然后转去执行.</p><pre tabindex=0><code class=language-x86asm data-lang=x86asm>IRET
+</code></pre><p>中断返回指令, 会自动将 IP, CS, FLAGS 出栈.</p></section><footer class="mt-12 flex flex-wrap"><a class="mr-1.5 mb-1.5 rounded-lg bg-black/[3%] px-5 py-2 no-underline dark:bg-white/[8%]" href=tags/%E6%B1%87%E7%BC%96>#汇编</a>
+<a class="mr-1.5 mb-1.5 rounded-lg bg-black/[3%] px-5 py-2 no-underline dark:bg-white/[8%]" href=tags/notes>#notes</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=/2017/12/27/union-find/><span class=mr-1.5>←</span><span>并查集(Union-Find) 判断连通性</span></a>
+<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=/2017/10/29/8086-assembly-02/><span>8086 汇编笔记 - 程序代码结构 - 02</span><span class=ml-1.5>→</span></a></nav><div class=mt-24 id=disqus_thread></div><script>const disqusShortname="devldd",script=document.createElement("script");script.src="https://"+disqusShortname+".disqus.com/embed.js",script.setAttribute("data-timestamp",+new Date),document.head.appendChild(script)</script></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2023
+<a class=link href>Devld</a></div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>Powered by Hugo️️</a>️
+<a class=link href=https://github.com/nanxiaobei/hugo-paper rel=noopener target=_blank>Theme Paper</a></footer></body></html>

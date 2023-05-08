@@ -1,0 +1,212 @@
+<!doctype html><html class="not-ready text-sm lg:text-base" style=--bg:#fff lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>使用 WireGuard 无缝接入内网 - Devld</title><meta name=theme-color><meta name=description content="去年心血来潮想搞个 NAS 放在家里，奈何囊肿羞涩，最终只能捡垃圾捡了个蜗牛星际，又因为种种原因吃了近一年的灰。最近又比较心血来潮，想起来了在角落中已经蒙尘的蜗牛星际。
+在某宝上买的机子已经由卖家预装了黑群晖，用起来也是完全的傻瓜式操作，免去了自己折腾各种软件浪费时间。目前仅仅作为一个 samba 文件服务器，在局域网中共享一些视频或者其他资源。
+OK，开始正题。现在需要支持在外面远程控制 NAS 下载一些东西。目前有这么几种方案：
+直接端口映射到内网的 NAS
+这种方案需要你有一个公网 IP，在路由器中将需要外网访问的端口直接映射到内网的 NAS 对应的端口上即可，操作也比较简单，速度则取决于你的上行带宽。
+使用 frp 之类的内网穿透工具
+这种方案需要一个拥有公网 IP 的服务器，可以将内网的端口映射到这台服务器指定的端口，在外面直接访问服务器的端口即可。具体的配置方法也比较简单，在此不再赘述，这个方案的速度却决于你的这台服务器的带宽。
+直接上 VPN
+这种方案也需要一个拥有公网 IP 的服务器，相较上面两种方案，这个可能不是那么的方便。但有个好处就是可以透明地访问整个内网的任意主机，速度也是取决于这台服务器的带宽。
+考虑到后面可能会折腾好多东西(虽然目前就这一个)，干脆将搞个 VPN 直接支持整个内网的访问吧，这样也不用一个端口一个端口地去映射了。但缺点也显而易见，访问内网就得连接 VPN，还是有那么一点点麻烦。
+那么用哪个 VPN 方案呢？
+OpenVPN PPTP L2TP&amp;IPSec WireGuard 先说 OpenVPN，这个安全性是毋庸置疑的，可以说是非常安全。但缺点是配置繁琐，而且性能可能不大好。
+PPTP 和 L2TP 在大部分平台中都有内置，配置起来非常方便，性能也挺好的，但不是很安全。
+WireGuard 是一个极其迅速而且简单的 VPN，它的目标是更快，更简单，更小，并且比 IPSec 更好用(来自 WireGuard 官网)。目前 WireGuard 已经合并进入了 Linux 内核。
+可以看一下性能对比(来自 WireGuard 官网)
+话不多说，开始安装吧。网络拓扑大致如下。
+其中：
+1.1.1.1 为服务器的公网 IP 192.168.1.0/24 为内网的 IP 段 192.168.2.0/24 为 WireGuard 的 VPN 内网网段 最终实现的效果是，电脑和手机通过连接 1."><meta name=author content="Devld"><link rel="preload stylesheet" as=style href=/main.min.css><script defer src=highlight.min.js onload=hljs.initHighlightingOnLoad()></script>
+<link rel=preload as=image href=theme.png><link rel=preload as=image href=github.svg><link rel=preload as=image href=rss.svg><link rel=icon href=favicon.ico><link rel=apple-touch-icon href=apple-touch-icon.png><meta name=generator content="Hugo 0.111.3"><meta property="og:title" content="使用 WireGuard 无缝接入内网"><meta property="og:description" content="去年心血来潮想搞个 NAS 放在家里，奈何囊肿羞涩，最终只能捡垃圾捡了个蜗牛星际，又因为种种原因吃了近一年的灰。最近又比较心血来潮，想起来了在角落中已经蒙尘的蜗牛星际。
+在某宝上买的机子已经由卖家预装了黑群晖，用起来也是完全的傻瓜式操作，免去了自己折腾各种软件浪费时间。目前仅仅作为一个 samba 文件服务器，在局域网中共享一些视频或者其他资源。
+OK，开始正题。现在需要支持在外面远程控制 NAS 下载一些东西。目前有这么几种方案：
+直接端口映射到内网的 NAS
+这种方案需要你有一个公网 IP，在路由器中将需要外网访问的端口直接映射到内网的 NAS 对应的端口上即可，操作也比较简单，速度则取决于你的上行带宽。
+使用 frp 之类的内网穿透工具
+这种方案需要一个拥有公网 IP 的服务器，可以将内网的端口映射到这台服务器指定的端口，在外面直接访问服务器的端口即可。具体的配置方法也比较简单，在此不再赘述，这个方案的速度却决于你的这台服务器的带宽。
+直接上 VPN
+这种方案也需要一个拥有公网 IP 的服务器，相较上面两种方案，这个可能不是那么的方便。但有个好处就是可以透明地访问整个内网的任意主机，速度也是取决于这台服务器的带宽。
+考虑到后面可能会折腾好多东西(虽然目前就这一个)，干脆将搞个 VPN 直接支持整个内网的访问吧，这样也不用一个端口一个端口地去映射了。但缺点也显而易见，访问内网就得连接 VPN，还是有那么一点点麻烦。
+那么用哪个 VPN 方案呢？
+OpenVPN PPTP L2TP&amp;IPSec WireGuard 先说 OpenVPN，这个安全性是毋庸置疑的，可以说是非常安全。但缺点是配置繁琐，而且性能可能不大好。
+PPTP 和 L2TP 在大部分平台中都有内置，配置起来非常方便，性能也挺好的，但不是很安全。
+WireGuard 是一个极其迅速而且简单的 VPN，它的目标是更快，更简单，更小，并且比 IPSec 更好用(来自 WireGuard 官网)。目前 WireGuard 已经合并进入了 Linux 内核。
+可以看一下性能对比(来自 WireGuard 官网)
+话不多说，开始安装吧。网络拓扑大致如下。
+其中：
+1.1.1.1 为服务器的公网 IP 192.168.1.0/24 为内网的 IP 段 192.168.2.0/24 为 WireGuard 的 VPN 内网网段 最终实现的效果是，电脑和手机通过连接 1."><meta property="og:type" content="article"><meta property="og:url" content="/2020/07/27/wireguard-setup/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-07-27T10:54:48+08:00"><meta property="article:modified_time" content="2020-07-27T10:54:48+08:00"><meta itemprop=name content="使用 WireGuard 无缝接入内网"><meta itemprop=description content="去年心血来潮想搞个 NAS 放在家里，奈何囊肿羞涩，最终只能捡垃圾捡了个蜗牛星际，又因为种种原因吃了近一年的灰。最近又比较心血来潮，想起来了在角落中已经蒙尘的蜗牛星际。
+在某宝上买的机子已经由卖家预装了黑群晖，用起来也是完全的傻瓜式操作，免去了自己折腾各种软件浪费时间。目前仅仅作为一个 samba 文件服务器，在局域网中共享一些视频或者其他资源。
+OK，开始正题。现在需要支持在外面远程控制 NAS 下载一些东西。目前有这么几种方案：
+直接端口映射到内网的 NAS
+这种方案需要你有一个公网 IP，在路由器中将需要外网访问的端口直接映射到内网的 NAS 对应的端口上即可，操作也比较简单，速度则取决于你的上行带宽。
+使用 frp 之类的内网穿透工具
+这种方案需要一个拥有公网 IP 的服务器，可以将内网的端口映射到这台服务器指定的端口，在外面直接访问服务器的端口即可。具体的配置方法也比较简单，在此不再赘述，这个方案的速度却决于你的这台服务器的带宽。
+直接上 VPN
+这种方案也需要一个拥有公网 IP 的服务器，相较上面两种方案，这个可能不是那么的方便。但有个好处就是可以透明地访问整个内网的任意主机，速度也是取决于这台服务器的带宽。
+考虑到后面可能会折腾好多东西(虽然目前就这一个)，干脆将搞个 VPN 直接支持整个内网的访问吧，这样也不用一个端口一个端口地去映射了。但缺点也显而易见，访问内网就得连接 VPN，还是有那么一点点麻烦。
+那么用哪个 VPN 方案呢？
+OpenVPN PPTP L2TP&amp;IPSec WireGuard 先说 OpenVPN，这个安全性是毋庸置疑的，可以说是非常安全。但缺点是配置繁琐，而且性能可能不大好。
+PPTP 和 L2TP 在大部分平台中都有内置，配置起来非常方便，性能也挺好的，但不是很安全。
+WireGuard 是一个极其迅速而且简单的 VPN，它的目标是更快，更简单，更小，并且比 IPSec 更好用(来自 WireGuard 官网)。目前 WireGuard 已经合并进入了 Linux 内核。
+可以看一下性能对比(来自 WireGuard 官网)
+话不多说，开始安装吧。网络拓扑大致如下。
+其中：
+1.1.1.1 为服务器的公网 IP 192.168.1.0/24 为内网的 IP 段 192.168.2.0/24 为 WireGuard 的 VPN 内网网段 最终实现的效果是，电脑和手机通过连接 1."><meta itemprop=datePublished content="2020-07-27T10:54:48+08:00"><meta itemprop=dateModified content="2020-07-27T10:54:48+08:00"><meta itemprop=wordCount content="934"><meta itemprop=keywords content="wireguard,vpn,linux,"><meta name=twitter:card content="summary"><meta name=twitter:title content="使用 WireGuard 无缝接入内网"><meta name=twitter:description content="去年心血来潮想搞个 NAS 放在家里，奈何囊肿羞涩，最终只能捡垃圾捡了个蜗牛星际，又因为种种原因吃了近一年的灰。最近又比较心血来潮，想起来了在角落中已经蒙尘的蜗牛星际。
+在某宝上买的机子已经由卖家预装了黑群晖，用起来也是完全的傻瓜式操作，免去了自己折腾各种软件浪费时间。目前仅仅作为一个 samba 文件服务器，在局域网中共享一些视频或者其他资源。
+OK，开始正题。现在需要支持在外面远程控制 NAS 下载一些东西。目前有这么几种方案：
+直接端口映射到内网的 NAS
+这种方案需要你有一个公网 IP，在路由器中将需要外网访问的端口直接映射到内网的 NAS 对应的端口上即可，操作也比较简单，速度则取决于你的上行带宽。
+使用 frp 之类的内网穿透工具
+这种方案需要一个拥有公网 IP 的服务器，可以将内网的端口映射到这台服务器指定的端口，在外面直接访问服务器的端口即可。具体的配置方法也比较简单，在此不再赘述，这个方案的速度却决于你的这台服务器的带宽。
+直接上 VPN
+这种方案也需要一个拥有公网 IP 的服务器，相较上面两种方案，这个可能不是那么的方便。但有个好处就是可以透明地访问整个内网的任意主机，速度也是取决于这台服务器的带宽。
+考虑到后面可能会折腾好多东西(虽然目前就这一个)，干脆将搞个 VPN 直接支持整个内网的访问吧，这样也不用一个端口一个端口地去映射了。但缺点也显而易见，访问内网就得连接 VPN，还是有那么一点点麻烦。
+那么用哪个 VPN 方案呢？
+OpenVPN PPTP L2TP&amp;IPSec WireGuard 先说 OpenVPN，这个安全性是毋庸置疑的，可以说是非常安全。但缺点是配置繁琐，而且性能可能不大好。
+PPTP 和 L2TP 在大部分平台中都有内置，配置起来非常方便，性能也挺好的，但不是很安全。
+WireGuard 是一个极其迅速而且简单的 VPN，它的目标是更快，更简单，更小，并且比 IPSec 更好用(来自 WireGuard 官网)。目前 WireGuard 已经合并进入了 Linux 内核。
+可以看一下性能对比(来自 WireGuard 官网)
+话不多说，开始安装吧。网络拓扑大致如下。
+其中：
+1.1.1.1 为服务器的公网 IP 192.168.1.0/24 为内网的 IP 段 192.168.2.0/24 为 WireGuard 的 VPN 内网网段 最终实现的效果是，电脑和手机通过连接 1."></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-0.5 text-3xl font-bold" href=/>Devld</a><div class="btn-dark text-[0] ml-6 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg=`"#fff"`.replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="mt-12 flex justify-center space-x-10 dark:invert lg:mt-0 lg:ml-12 lg:items-center lg:space-x-6"><a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./github.svg) href=https://github.com/devld target=_blank rel=me>github</a>
+<a class="h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat] lg:h-6 lg:w-6" style=--url:url(./rss.svg) href=index.xml target=_blank rel=alternate>rss</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-10rem)] max-w-3xl px-8 pt-16 pb-24 dark:prose-invert"><article><header class=mb-20><h1 class="!my-0 pb-2.5">使用 WireGuard 无缝接入内网</h1><div class="text-sm opacity-60"><time>2020-07-27</time>
+<span class="inline-flex flex-wrap ml-6"><a class="ml-1.5 no-underline" href=categories/%E6%8A%98%E8%85%BE>折腾</a></span></div></header><section><p>去年心血来潮想搞个 NAS 放在家里，奈何囊肿羞涩，最终只能捡垃圾捡了个蜗牛星际，又因为种种原因吃了近一年的灰。最近又比较心血来潮，想起来了在角落中已经蒙尘的蜗牛星际。</p><p>在某宝上买的机子已经由卖家预装了黑群晖，用起来也是完全的傻瓜式操作，免去了自己折腾各种软件浪费时间。目前仅仅作为一个 <code>samba</code> 文件服务器，在局域网中共享一些视频或者其他资源。</p><p>OK，开始正题。现在需要支持在外面远程控制 NAS 下载一些东西。目前有这么几种方案：</p><ul><li><p>直接端口映射到内网的 NAS</p><p>这种方案需要你有一个公网 IP，在路由器中将需要外网访问的端口直接映射到内网的 NAS 对应的端口上即可，操作也比较简单，速度则取决于你的上行带宽。</p></li><li><p>使用 <a href=https://github.com/fatedier/frp>frp</a> 之类的内网穿透工具</p><p>这种方案需要一个拥有公网 IP 的服务器，可以将内网的端口映射到这台服务器指定的端口，在外面直接访问服务器的端口即可。具体的配置方法也比较简单，在此不再赘述，这个方案的速度却决于你的这台服务器的带宽。</p></li><li><p>直接上 VPN</p><p>这种方案也需要一个拥有公网 IP 的服务器，相较上面两种方案，这个可能不是那么的方便。但有个好处就是可以透明地访问整个内网的任意主机，速度也是取决于这台服务器的带宽。</p></li></ul><p>考虑到后面可能会折腾好多东西(虽然目前就这一个)，干脆将搞个 VPN 直接支持整个内网的访问吧，这样也不用一个端口一个端口地去映射了。但缺点也显而易见，访问内网就得连接 VPN，还是有那么一点点麻烦。</p><p>那么用哪个 VPN 方案呢？</p><ul><li>OpenVPN</li><li>PPTP</li><li>L2TP&amp;IPSec</li><li>WireGuard</li></ul><p>先说 OpenVPN，这个安全性是毋庸置疑的，可以说是非常安全。但缺点是配置繁琐，而且性能可能不大好。</p><p>PPTP 和 L2TP 在大部分平台中都有内置，配置起来非常方便，性能也挺好的，但不是很安全。</p><p>WireGuard 是一个极其迅速而且简单的 VPN，它的目标是更快，更简单，更小，并且比 IPSec 更好用(来自 WireGuard 官网)。目前 WireGuard 已经合并进入了 Linux 内核。</p><p>可以看一下性能对比(来自 <a href=https://www.wireguard.com/performance/#results>WireGuard 官网</a>)</p><p><img src=image-20200727151702974.png alt=image-20200727151702974></p><p>话不多说，开始安装吧。网络拓扑大致如下。</p><p><img src=wireguard-network.svg alt=wireguard-network></p><p>其中：</p><ul><li><code>1.1.1.1</code> 为服务器的公网 IP</li><li><code>192.168.1.0/24</code> 为内网的 IP 段</li><li><code>192.168.2.0/24</code> 为 WireGuard 的 VPN 内网网段</li></ul><p>最终实现的效果是，电脑和手机通过连接 <code>1.1.1.1</code> 上的 VPN 服务，接入其他两个网段。</p><h2 id=安装-wireguard>安装 WireGuard</h2><p>WireGuard 不区分服务端与客户端，安装也比较简单，不出意外的话可以一行命令直接安装。</p><p>具体可参考 <a href=https://www.wireguard.com/install/>Installation - WireGuard</a>，基本上涵盖了大部分 Linux 发行版，Windows 以及 MacOS，也包含了 Android, iOS 的安装包。</p><p>由于群晖不便于配置服务自启动（应该是我不会，没有 <code>systemd</code> 用的顺手），干脆在黑群晖中装个 Debian10 的虚拟机当作接入内网的网关（也就是上图中的 NAS）。</p><p>WireGuard 使用 <code>wg</code> 命令来进行控制，并且提供了一个 <code>wg-quick</code> 命令，可用来快速管理 VPN 连接。</p><h2 id=生成密钥>生成密钥</h2><div class=highlight><pre tabindex=0 style=color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#7f848e># 生成私钥</span>
+</span></span><span style=display:flex><span>$ wg genkey &gt; priv_key
+</span></span><span style=display:flex><span>$ cat priv_key
+</span></span><span style=display:flex><span>qNzPeN726rM8L+JiSYeqm5zi6VwFlaa4OZhaCNPa4Uk<span style=color:#56b6c2>=</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#7f848e># 生成公钥</span>
+</span></span><span style=display:flex><span>$ wg pubkey &lt; priv_key &gt; pub_key <span style=color:#7f848e># 使用私钥来生成公钥</span>
+</span></span><span style=display:flex><span>$ cat pub_key
+</span></span><span style=display:flex><span><span style=color:#e06c75>NtMtwyEB6tsQxOA5Z6xhuQkhwTFXeGPmbnirCA4lqgw</span><span style=color:#56b6c2>=</span>
+</span></span></code></pre></div><p>WireGuard 的服务端与客户端是对等的。生成密钥的步骤适用于服务端，也适用于客户端。</p><h2 id=服务器端配置>服务器端配置</h2><p>WireGuard 的配置文件一般情况下放在 <code>/etc/wireguard</code> 中，且为了安全考虑，需要将这个目录的所有者设置为 <code>root</code>，权限设置为 <code>700</code>。</p><p>一般情况下，配置文件可依次命名为 <code>wgX.conf</code>，其中 <code>X</code> 为任意的编号，<code>wgX</code> 最终也是创建出来的网络接口的名称。</p><p>此处，在服务端与客户端中，都将命名为 <code>wg0.conf</code></p><p>先来看一下最基础的配置文件 <code>/etc/wireguard/wg0.conf</code></p><div class=highlight><pre tabindex=0 style=color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=display:flex><span><span style=color:#c678dd>[Interface]</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>Address</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>192.168.2.1/32</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>ListenPort</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>28385</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PrivateKey</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>Server private key</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#c678dd>[Peer]</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PublicKey</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>Client public key</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>AllowedIPs</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>IP Range</span>
+</span></span></code></pre></div><p>就是这么简单。分为两种配置组：</p><ul><li><p><code>Interface</code></p><p>这个配置项为本地接口的配置，其中：</p><ul><li><code>Address</code> 为 VPN 连接的本地 IP 地址</li><li><code>ListenPort</code> 作为服务端需要声明一个监听的端口，WireGuard 使用 UDP 协议，这个端口可以任意填写。需要保证防火墙已开放 UDP 的这个端口</li><li><code>PrivateKey</code> 为上一步生成的私钥</li></ul></li><li><p><code>Peer</code></p><p>这个为对端的配置，如果有多个，则需添加多个 <code>Peer</code> 配置，服务端的 <code>Peer</code> 配置项即定义了各个可连接的客户端。其中：</p><ul><li><code>PublicKey</code> 为对端的公钥</li><li><code>AllowedIPs</code> 在<a href=#%E9%85%8D%E7%BD%AE%E8%B7%AF%E7%94%B1>配置路由</a>会讲到</li></ul></li></ul><h2 id=客户端配置>客户端配置</h2><p>客户端的配置与服务端的配置基本一致。每个端都需要生成各自的密钥对。</p><p>下面的为 NAS 的配置文件 <code>/etc/wireguard/wg0.conf</code></p><div class=highlight><pre tabindex=0 style=color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=display:flex><span><span style=color:#c678dd>[Interface]</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PrivateKey</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>Client private key</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>Address</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>192.168.2.2/32</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#c678dd>[Peer]</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PublicKey</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>Server private key</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>AllowedIPs</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>IP Range</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>Endpoint</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>1.1.1.1:28385</span>
+</span></span></code></pre></div><p>客户端与服务端不同的地方在于：</p><ul><li><code>Interface</code> 配置中没有了 <code>ListenPort</code></li><li><code>Peer</code> 即为服务端，与服务端不同的地方在于多了一个 <code>Endpoint</code></li></ul><p>一般情况下，只有主动发起连接的端需要在 <code>Peer</code> 中指定 <code>Endpoint</code>，此处为服务器的公网 IP 和监听的端口。</p><p>基础的配置已经完成，现在可以直接使用 <code>wg-quick up wg0</code> 启动 VPN，其中 <code>wg0</code> 为配置文件的名称。</p><h2 id=配置路由>配置路由</h2><p>通过上面的配置成功启动 VPN 后，即使连接成功，也不能访问 <code>192.168.1.0/24</code> 和 <code>192.168.2.1/24</code> 网段，这是因为截至目前，我们仅仅配置了 VPN 隧道，但路由还没有配置，发出去的 IP 包不知道应该被发往哪去。</p><p>按照预先设计的网络架构，在外面通往内网的流量大致流向为：</p><pre tabindex=0><code>192.168.2.1(WireGuard 服务端) &lt;------+ 192.168.2.X(客户端)
+       +
+       |
+       v
+  192.168.2.2(NAS)
+       +
+       |
+       v
+192.168.1.0/24(内网网段)
+</code></pre><p>按照上图所示，我们需要：</p><ul><li>外网客户端将发往 <code>192.168.1.0/24</code> 和 <code>192.168.2.0/24</code> 网段的包转发到服务端(即 <code>192.168.2.1</code>)</li><li>服务端将 <code>192.168.1.0/24</code>(内网) 网段的包发给 NAS (即 <code>192.168.2.2</code>)</li><li>NAS 将来自于 <code>192.168.2.0/24</code> 网段发往 <code>192.168.1.0/24</code> 网段的包进行 SNAT</li></ul><p>上面的配置中的 <code>AllowedIPs</code> 可以被认为是路由规则的定义。意思是：</p><ul><li>当出向包的目的 IP 为 <code>AllowedIPs</code> 定义的网段时，将该包从 VPN 隧道发送出去</li><li>当从 VPN 隧道进来的包的源 IP 不匹配 <code>AllowedIPs</code> 定义的网段时，直接将包丢弃</li></ul><h3 id=服务端>服务端</h3><p>所以按照上面的包转发规则，可以得出各个客户端 <code>Peer</code> 的 <code>AllowedIPs</code></p><ul><li>NAS <code>192.168.2.2/32, 192.168.1.0/24</code></li><li>其他客户端 <code>192.168.2.x/32</code> 为各自的 IP 地址</li></ul><h3 id=配置-iptables>配置 <code>iptables</code></h3><p>除了配置 <code>AllowedIPs</code> 外，在 Linux 中还需要配置 <code>iptables</code>。</p><p>如果<code>iptables</code> 的 <code>filter</code> 表的 <code>FORWARD</code> 链的默认策略不是 <code>ACCEPT</code> 则还需要添加规则，使包可以被转发。</p><p><strong>如果默认策略是 <code>ACCEPT</code> 则可以跳过这部分。</strong></p><div class=highlight><pre tabindex=0 style=color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ iptables -L filter -n -v
+</span></span><span style=display:flex><span>Chain FORWARD <span style=color:#56b6c2>(</span>policy DROP <span style=color:#d19a66>0</span> packets, <span style=color:#d19a66>0</span> bytes<span style=color:#56b6c2>)</span>
+</span></span><span style=display:flex><span> pkts bytes target     prot opt in     out     <span style=color:#e5c07b>source</span>               destination
+</span></span><span style=display:flex><span>...
+</span></span></code></pre></div><p>虽然可以将 <code>iptables</code> 的默认策略改掉，但不推荐这样做。</p><p>关于 <code>iptables</code> 的教程可以参考 <a href=http://www.zsythink.net/archives/tag/iptables/>iptables | 朱双印博客</a></p><div class=highlight><pre tabindex=0 style=color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>iptables -I FORWARD -s 192.168.2.0/24 -i wg0 -d 192.168.2.0/24 -j ACCEPT <span style=color:#7f848e># 放行 VPN 网段</span>
+</span></span><span style=display:flex><span>iptables -I FORWARD -s 192.168.2.0/24 -i wg0 -d 192.168.1.0/24 -j ACCEPT <span style=color:#7f848e># 放行 VPN 转发到内网的流量</span>
+</span></span><span style=display:flex><span>iptables -I FORWARD -s 192.168.1.0/24 -i wg0 -d 192.168.2.0/24 -j ACCEPT <span style=color:#7f848e># 放行内网 转发到 VPN 的流量</span>
+</span></span></code></pre></div><p>在 WireGuard 的配置文件中，可以在 <code>Interface</code> 下指定多个 <code>PostUp</code> 和 <code>PostDown</code>，分别在 VPN 启动和停止后按照定义的顺序依次执行。</p><p>服务端配置</p><div class=highlight><pre tabindex=0 style=color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=display:flex><span><span style=color:#c678dd>[Interface]</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>Address</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>192.168.2.1/32</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>ListenPort</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>28385</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PrivateKey</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>Server private key</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PostUp</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>iptables -I FORWARD -s 192.168.2.0/24 -i wg0 -d 192.168.2.0/24 -j ACCEPT</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PostUp</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>iptables -I FORWARD -s 192.168.2.0/24 -i wg0 -d 192.168.1.0/24 -j ACCEPT</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PostUP</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>iptables -I FORWARD -s 192.168.1.0/24 -i wg0 -d 192.168.2.0/24 -j ACCEPT</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PostDown</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>iptables -D FORWARD -s 192.168.2.0/24 -i wg0 -d 192.168.2.0/24 -j ACCEPT</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PostDown</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>iptables -D FORWARD -s 192.168.2.0/24 -i wg0 -d 192.168.1.0/24 -j ACCEPT</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PostDown</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>iptables -D FORWARD -s 192.168.1.0/24 -i wg0 -d 192.168.2.0/24 -j ACCEPT</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#c678dd>[Peer]</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PublicKey</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>Client public key</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>AllowedIPs</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>IP Range</span>
+</span></span></code></pre></div><p>另外还需要开启 Linux 内核的 IP 包转发</p><div class=highlight><pre tabindex=0 style=color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ sysctl net.ipv4.ip_forward
+</span></span><span style=display:flex><span><span style=color:#d19a66>0</span>
+</span></span></code></pre></div><p>如果上面的输出为 <code>0</code> 则 Linux 内核默认会丢弃所有目的 IP 不为本机的包。</p><p>编辑 <code>/etc/sysctl.conf</code>， 将 <code>net.ipv4.ip_forward = 0</code> 中的 <code>0</code> 改为 <code>1</code>。然后 <code>sysctl -p</code> 使其生效。</p><h3 id=nas>NAS</h3><p>NAS 中的 <code>Peer</code> 为服务端，则 <code>AllowedIPs</code> 应为 <code>192.168.2.0/24</code>。</p><p>同时，NAS 需要负责将来自 <code>192.168.2.0/24</code> 网段的发往 <code>192.168.1.0/24</code> 的包进行 SNAT。</p><div class=highlight><pre tabindex=0 style=color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=display:flex><span><span style=color:#c678dd>[Interface]</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PrivateKey</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>Client private key</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>Address</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>192.168.2.2/32</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PostUp</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>iptables -t nat -A POSTROUTING -s 192.168.2.0/24 -j SNAT --to-source 192.168.1.2</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PostDown</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>iptables -t nat -D POSTROUTING -s 192.168.2.0/24 -j SNAT --to-source 192.168.1.2</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#c678dd>[Peer]</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PublicKey</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>Server public key</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>AllowedIPs</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>192.168.2.0/24</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>Endpoint</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>1.1.1.1:28385</span>
+</span></span></code></pre></div><p>注意其中的 <code>--to-source 192.168.1.2</code> 的 IP 地址为 NAS 在内网中的 IP 地址。</p><p>同样，在 NAS 上，也需要确认已开启包转发。</p><h2 id=总结>总结</h2><p>最终的配置文件如下</p><ul><li><p>服务端</p><div class=highlight><pre tabindex=0 style=color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=display:flex><span><span style=color:#c678dd>[Interface]</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>Address</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>192.168.2.1/32</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>ListenPort</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>28385</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PrivateKey</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>&lt;Server private key&gt;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PostUp</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>iptables -I FORWARD -s 192.168.2.0/24 -i wg0 -d 192.168.2.0/24 -j ACCEPT</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PostUp</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>iptables -I FORWARD -s 192.168.2.0/24 -i wg0 -d 192.168.1.0/24 -j ACCEPT</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PostUP</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>iptables -I FORWARD -s 192.168.1.0/24 -i wg0 -d 192.168.2.0/24 -j ACCEPT</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PostDown</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>iptables -D FORWARD -s 192.168.2.0/24 -i wg0 -d 192.168.2.0/24 -j ACCEPT</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PostDown</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>iptables -D FORWARD -s 192.168.2.0/24 -i wg0 -d 192.168.1.0/24 -j ACCEPT</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PostDown</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>iptables -D FORWARD -s 192.168.1.0/24 -i wg0 -d 192.168.2.0/24 -j ACCEPT</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#7f848e># NAS</span>
+</span></span><span style=display:flex><span><span style=color:#c678dd>[Peer]</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PublicKey</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>&lt;Client public key&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>AllowedIPs</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>192.168.2.2/32, 192.168.1.0/24</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#7f848e># 其他客户端 ...</span>
+</span></span><span style=display:flex><span><span style=color:#c678dd>[Peer]</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PublicKey</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>&lt;Client public key&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>AllowedIPs</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>192.168.2.x/32</span>
+</span></span></code></pre></div></li><li><p>NAS</p><div class=highlight><pre tabindex=0 style=color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=display:flex><span><span style=color:#c678dd>[Interface]</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PrivateKey</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>&lt;Client private key&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>Address</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>192.168.2.2/32</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PostUp</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>iptables -t nat -A POSTROUTING -s 192.168.2.0/24 -j SNAT --to-source 192.168.1.2</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PostDown</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>iptables -t nat -D POSTROUTING -s 192.168.2.0/24 -j SNAT --to-source 192.168.1.2</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#c678dd>[Peer]</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PublicKey</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>&lt;Server public key&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>AllowedIPs</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>192.168.2.0/24</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>Endpoint</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>1.1.1.1:28385</span>
+</span></span></code></pre></div></li><li><p>其他客户端</p><div class=highlight><pre tabindex=0 style=color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=display:flex><span><span style=color:#c678dd>[Interface]</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PrivateKey</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>&lt;Client private key&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>Address</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>192.168.2.X/32</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#c678dd>[Peer]</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>PublicKey</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>&lt;Server public key&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>AllowedIPs</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>192.168.2.0/24, 192.168.1.0/24</span>
+</span></span><span style=display:flex><span><span style=color:#e06c75>Endpoint</span> <span style=color:#56b6c2>=</span> <span style=color:#98c379>1.1.1.1:28385</span>
+</span></span></code></pre></div></li></ul><p>在各个机器上分别启动服务</p><div class=highlight><pre tabindex=0 style=color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>wg-quick up wg0
+</span></span></code></pre></div><p>通过 <code>wg</code> 命令可查看当前状态</p><div class=highlight><pre tabindex=0 style=color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>$ wg <span style=color:#7f848e># 服务端</span>
+</span></span><span style=display:flex><span>interface: wg0
+</span></span><span style=display:flex><span>  public key: Public key
+</span></span><span style=display:flex><span>  private key: <span style=color:#56b6c2>(</span>hidden<span style=color:#56b6c2>)</span>
+</span></span><span style=display:flex><span>  listening port: <span style=color:#d19a66>28385</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>peer: Client public key <span style=color:#7f848e># NAS</span>
+</span></span><span style=display:flex><span>  endpoint: x.x.x.x:41995
+</span></span><span style=display:flex><span>  allowed ips: 192.168.2.2/32, 192.168.1.0/24
+</span></span><span style=display:flex><span>  latest handshake: <span style=color:#d19a66>36</span> seconds ago
+</span></span><span style=display:flex><span>  transfer: 132.48 KiB received, 49.25 KiB sent
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>peer: Client public key <span style=color:#7f848e># 外网的电脑</span>
+</span></span><span style=display:flex><span>  endpoint: x.x.x.x:60941
+</span></span><span style=display:flex><span>  allowed ips: 192.168.2.3/32
+</span></span><span style=display:flex><span>  latest handshake: <span style=color:#d19a66>1</span> minute, <span style=color:#d19a66>11</span> seconds ago
+</span></span><span style=display:flex><span>  transfer: 62.54 KiB received, 124.75 KiB sent
+</span></span><span style=display:flex><span>  
+</span></span><span style=display:flex><span><span style=color:#7f848e># ...</span>
+</span></span></code></pre></div><p>在外网尝试 ping 一下内网的主机</p><div class=highlight><pre tabindex=0 style=color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ ping 192.168.1.1 <span style=color:#7f848e># 路由器</span>
+</span></span><span style=display:flex><span>PING 192.168.1.1 <span style=color:#56b6c2>(</span>192.168.1.1<span style=color:#56b6c2>)</span> 56<span style=color:#56b6c2>(</span>84<span style=color:#56b6c2>)</span> bytes of data.
+</span></span><span style=display:flex><span><span style=color:#d19a66>64</span> bytes from 192.168.1.1: <span style=color:#e06c75>icmp_seq</span><span style=color:#56b6c2>=</span><span style=color:#d19a66>1</span> <span style=color:#e06c75>ttl</span><span style=color:#56b6c2>=</span><span style=color:#d19a66>63</span> <span style=color:#e06c75>time</span><span style=color:#56b6c2>=</span><span style=color:#d19a66>113</span> ms
+</span></span><span style=display:flex><span><span style=color:#d19a66>64</span> bytes from 192.168.1.1: <span style=color:#e06c75>icmp_seq</span><span style=color:#56b6c2>=</span><span style=color:#d19a66>2</span> <span style=color:#e06c75>ttl</span><span style=color:#56b6c2>=</span><span style=color:#d19a66>63</span> <span style=color:#e06c75>time</span><span style=color:#56b6c2>=</span>90.10 ms
+</span></span><span style=display:flex><span><span style=color:#7f848e># ...</span>
+</span></span></code></pre></div><p>OK，完成，现在可以访问任意内网的机器了。</p></section><footer class="mt-12 flex flex-wrap"><a class="mr-1.5 mb-1.5 rounded-lg bg-black/[3%] px-5 py-2 no-underline dark:bg-white/[8%]" href=tags/wireguard>#wireguard</a>
+<a class="mr-1.5 mb-1.5 rounded-lg bg-black/[3%] px-5 py-2 no-underline dark:bg-white/[8%]" href=tags/vpn>#vpn</a>
+<a class="mr-1.5 mb-1.5 rounded-lg bg-black/[3%] px-5 py-2 no-underline dark:bg-white/[8%]" href=tags/linux>#linux</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=/2018/03/29/cpp-learning-01/><span>C++ 类与类继承</span><span class=ml-1.5>→</span></a></nav><div class=mt-24 id=disqus_thread></div><script>const disqusShortname="devldd",script=document.createElement("script");script.src="https://"+disqusShortname+".disqus.com/embed.js",script.setAttribute("data-timestamp",+new Date),document.head.appendChild(script)</script></article></main><footer class="opaco mx-auto flex h-[5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2023
+<a class=link href>Devld</a></div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>Powered by Hugo️️</a>️
+<a class=link href=https://github.com/nanxiaobei/hugo-paper rel=noopener target=_blank>Theme Paper</a></footer></body></html>

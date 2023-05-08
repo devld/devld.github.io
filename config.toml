@@ -6,12 +6,12 @@ disqusShortname = 'devldd'
 
 [permalinks]
 posts = '/:year/:month/:day/:filename/'
+page = '/:filename/'
 
 [params]
 color = 'light'
 rss = true
+github = 'devld'
 
-[markup]
 [markup.highlight]
-lineNos = true
 style = 'onedark'

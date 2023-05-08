@@ -1,6 +1,11 @@
 languageCode = 'zh-cn'
-title = 'My New Hugo Site'
+title = 'Devld'
 theme = 'paper'
+
+disqusShortname = 'devldd'
+
+[permalinks]
+posts = '/:year/:month/:day/:filename/'
 
 [params]
 color = 'light'

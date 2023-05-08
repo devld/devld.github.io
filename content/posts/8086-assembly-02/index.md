@@ -148,4 +148,4 @@ MEDIUM  |   64kb+    |     64kb     | 可以有多个数据段, 只能有一个�
   例如 START, 连接程序据此设置 CS:IP 的值. 
 
 
-[1]: https://pan.baidu.com/s/1qXNIHPy
+[1]: https://ss.devld.me/#/_/Sharing?h=download&e=AsmTools.zip

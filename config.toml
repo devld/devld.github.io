@@ -13,6 +13,9 @@ page = '/:filename/'
 color = 'light'
 rss = true
 github = 'devld'
+[[params.links]]
+name = 'Vgbhfive'
+href = 'https://blog.vgbhfive.cn'
 
 [markup.highlight]
 style = 'onedark'

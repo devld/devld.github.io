@@ -19,3 +19,6 @@ href = 'https://blog.vgbhfive.cn'
 
 [markup.highlight]
 style = 'onedark'
+
+[markup.goldmark.renderer]
+unsafe = true

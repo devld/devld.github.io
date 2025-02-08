@@ -1,10 +1,40 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>c-cpp on Devld</title><link>/categories/c-cpp/</link><description>Recent content in c-cpp on Devld</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 29 Mar 2018 20:28:00 +0800</lastBuildDate><atom:link href="/categories/c-cpp/index.xml" rel="self" type="application/rss+xml"/><item><title>C++ 类与类继承</title><link>/2018/03/29/cpp-learning-01/</link><pubDate>Thu, 29 Mar 2018 20:28:00 +0800</pubDate><guid>/2018/03/29/cpp-learning-01/</guid><description>构造函数与析构函数 构造函数 普通构造函数
-普通构造函数用来创建对象，如果该类位定义构造函数，则编译器会生成一个默认的空参数构造函数。
-复制构造函数
-复制构造函数，顾名思义，用于复制一个对象，定义如下:
-Test(const Test &amp;amp;t); 转换构造函数
-转换构造函数，将某个类型转为这个类的类型，定义如下:
-Test(const int &amp;amp;a); 使用转换构造函数可以实现类型的转换
-// 调用转换构造函数，实例化一个 Test 对象 Test a = 42; 如果不希望构造函数被用于隐式转换，可用 explicit 关键字阻止隐式转换。
-使用类的默认构造函数创建对象时，可能会出现下面的问题:
-// 创建一个 Test 类型的变量 a Test test; // 声明了一个返回值为 Test 的函数 // 在 调用 a.fun() 时，会报错: // error: request for member &amp;#39;fun&amp;#39; in &amp;#39;a&amp;#39;, which is of non-class type &amp;#39;Test()&amp;#39; Test a(); // 动态创建对象 Test *tp = new Test(); // 销毁动态创建的对象 delete tp; 析构函数 正好与构造函数相反，用来在该对象被销毁时，释放资源。定义如下:</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>C-Cpp on Devld</title><link>/categories/c-cpp/</link><description>Recent content in C-Cpp on Devld</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Thu, 29 Mar 2018 20:28:00 +0800</lastBuildDate><atom:link href="/categories/c-cpp/index.xml" rel="self" type="application/rss+xml"/><item><title>C++ 类与类继承</title><link>/2018/03/29/cpp-learning-01/</link><pubDate>Thu, 29 Mar 2018 20:28:00 +0800</pubDate><guid>/2018/03/29/cpp-learning-01/</guid><description>&lt;h3 id="构造函数与析构函数">构造函数与析构函数&lt;/h3>
+&lt;h4 id="构造函数">构造函数&lt;/h4>
+&lt;ul>
+&lt;li>
+&lt;p>普通构造函数&lt;/p>
+&lt;p>普通构造函数用来创建对象，如果该类位定义构造函数，则编译器会生成一个默认的空参数构造函数。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>复制构造函数&lt;/p>
+&lt;p>复制构造函数，顾名思义，用于复制一个对象，定义如下:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">Test&lt;/span>(&lt;span style="color:#c678dd">const&lt;/span> &lt;span style="color:#e06c75">Test&lt;/span> &lt;span style="color:#56b6c2">&amp;amp;&lt;/span>&lt;span style="color:#e06c75">t&lt;/span>);
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>转换构造函数&lt;/p>
+&lt;p>转换构造函数，将某个类型转为这个类的类型，定义如下:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">Test&lt;/span>(&lt;span style="color:#c678dd">const&lt;/span> &lt;span style="color:#e5c07b">int&lt;/span> &lt;span style="color:#56b6c2">&amp;amp;&lt;/span>&lt;span style="color:#e06c75">a&lt;/span>);
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>使用转换构造函数可以实现类型的转换&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">// 调用转换构造函数，实例化一个 Test 对象
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">&lt;/span>&lt;span style="color:#e06c75">Test&lt;/span> &lt;span style="color:#e06c75">a&lt;/span> &lt;span style="color:#56b6c2">=&lt;/span> &lt;span style="color:#d19a66">42&lt;/span>;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果不希望构造函数被用于隐式转换，可用 &lt;code>explicit&lt;/code> 关键字阻止隐式转换。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>使用类的默认构造函数创建对象时，可能会出现下面的问题:&lt;/p>
+&lt;!-- more -->
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">// 创建一个 Test 类型的变量 a
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">&lt;/span>&lt;span style="color:#e06c75">Test&lt;/span> &lt;span style="color:#e06c75">test&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">// 声明了一个返回值为 Test 的函数
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">// 在 调用 a.fun() 时，会报错: 
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">// error: request for member &amp;#39;fun&amp;#39; in &amp;#39;a&amp;#39;, which is of non-class type &amp;#39;Test()&amp;#39;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">&lt;/span>&lt;span style="color:#e06c75">Test&lt;/span> &lt;span style="color:#61afef;font-weight:bold">a&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">// 动态创建对象
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">&lt;/span>&lt;span style="color:#e06c75">Test&lt;/span> &lt;span style="color:#56b6c2">*&lt;/span>&lt;span style="color:#e06c75">tp&lt;/span> &lt;span style="color:#56b6c2">=&lt;/span> &lt;span style="color:#c678dd">new&lt;/span> &lt;span style="color:#e06c75">Test&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">// 销毁动态创建的对象
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">&lt;/span>&lt;span style="color:#c678dd">delete&lt;/span> &lt;span style="color:#e06c75">tp&lt;/span>;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="析构函数">析构函数&lt;/h4>
+&lt;p>正好与构造函数相反，用来在该对象被销毁时，释放资源。定义如下:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#56b6c2">~&lt;/span>&lt;span style="color:#e06c75">Test&lt;/span>();
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>非动态创建的对象会在合适的时刻由编译器自动调用析构函数销毁该对象，而由 &lt;code>new&lt;/code> 关键字创建的对象则需要手动使用 &lt;code>delete&lt;/code> 销毁对象释放内存。&lt;/p></description></item></channel></rss>

@@ -1,10 +1,28 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>android on Devld</title><link>/tags/android/</link><description>Recent content in android on Devld</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 24 Oct 2017 17:56:00 +0800</lastBuildDate><atom:link href="/tags/android/index.xml" rel="self" type="application/rss+xml"/><item><title>《Android 开发艺术探索》笔记 - Activity - 01</title><link>/2017/10/24/android-dev-art-note-01/</link><pubDate>Tue, 24 Oct 2017 17:56:00 +0800</pubDate><guid>/2017/10/24/android-dev-art-note-01/</guid><description>Activity 生命周期 正常情况下 Activity 的生命周期 onCreate: 表示 Activity 正在被创建, 主要在这个方法中做一些初始化.
-onRestart: 表示 Activity 正在重新启动, 一般情况下, 当 Activity 从不可见变为可见时会被调用.
-onStart: 表示 Activity 正在启动, 但还无法与用户交互, 此时 Activity 还在后台.
-onResume: 表示 Activity 已经可见了, 和 onStart 的区别是现在 Activity 处于前台.
-onPause: 当其他 Activity 进入前台时会被调用, 这个方法里不能执行耗时的操作, 否则会影响新 Activity 的启动, 因为新 Activity 的 onResume 会在这个 Activity 的 onPause 执行完成后才会被调用.
-onStop: 表示 Activity 即将停止, 可以做一些回收工作, 但也不能太耗时.
-onDestroy: 表示 Activity 即将被销毁, 这是最后一个回调.
-上图来源于: https://developer.android.google.cn/reference/android/app/Activity.html
-Activity 的生命周期回调方法分为一下几种情况:
-首次启动, onCreate -&amp;gt; onStart -&amp;gt; onResume.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Android on Devld</title><link>/tags/android/</link><description>Recent content in Android on Devld</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Tue, 24 Oct 2017 17:56:00 +0800</lastBuildDate><atom:link href="/tags/android/index.xml" rel="self" type="application/rss+xml"/><item><title>《Android 开发艺术探索》笔记 - Activity - 01</title><link>/2017/10/24/android-dev-art-note-01/</link><pubDate>Tue, 24 Oct 2017 17:56:00 +0800</pubDate><guid>/2017/10/24/android-dev-art-note-01/</guid><description>&lt;h3 id="activity-生命周期">Activity 生命周期&lt;/h3>
+&lt;h4 id="正常情况下-activity-的生命周期">正常情况下 Activity 的生命周期&lt;/h4>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>onCreate&lt;/strong>: 表示 Activity 正在被创建, 主要在这个方法中做一些初始化.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>onRestart&lt;/strong>: 表示 Activity 正在重新启动, 一般情况下, 当 Activity 从不可见变为可见时会被调用.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>onStart&lt;/strong>: 表示 Activity 正在启动, 但还无法与用户交互, 此时 Activity 还在后台.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>onResume&lt;/strong>: 表示 Activity 已经可见了, 和 onStart 的区别是现在 Activity 处于前台.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>onPause&lt;/strong>: 当其他 Activity 进入前台时会被调用, 这个方法里不能执行耗时的操作, 否则会影响新 Activity 的启动, 因为新 Activity 的 onResume 会在这个 Activity 的 onPause 执行完成后才会被调用.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>onStop&lt;/strong>: 表示 Activity 即将停止, 可以做一些回收工作, 但也不能太耗时.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>onDestroy&lt;/strong>: 表示 Activity 即将被销毁, 这是最后一个回调.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;!-- more -->
+&lt;p>&lt;img src="activity-lifecycle.png" alt="Activity Life Cycle">&lt;/p>
+&lt;p>上图来源于: &lt;a href="https://developer.android.google.cn/reference/android/app/Activity.html">https://developer.android.google.cn/reference/android/app/Activity.html&lt;/a>&lt;/p></description></item></channel></rss>

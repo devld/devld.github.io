@@ -1,55 +1,359 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Devld</title><link>/</link><description>Recent content on Devld</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Mon, 27 Jul 2020 10:54:48 +0800</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml"/><item><title>使用 WireGuard 无缝接入内网</title><link>/2020/07/27/wireguard-setup/</link><pubDate>Mon, 27 Jul 2020 10:54:48 +0800</pubDate><guid>/2020/07/27/wireguard-setup/</guid><description>去年心血来潮想搞个 NAS 放在家里，奈何囊肿羞涩，最终只能捡垃圾捡了个蜗牛星际，又因为种种原因吃了近一年的灰。最近又比较心血来潮，想起来了在角落中已经蒙尘的蜗牛星际。
-在某宝上买的机子已经由卖家预装了黑群晖，用起来也是完全的傻瓜式操作，免去了自己折腾各种软件浪费时间。目前仅仅作为一个 samba 文件服务器，在局域网中共享一些视频或者其他资源。
-OK，开始正题。现在需要支持在外面远程控制 NAS 下载一些东西。目前有这么几种方案：
-直接端口映射到内网的 NAS
-这种方案需要你有一个公网 IP，在路由器中将需要外网访问的端口直接映射到内网的 NAS 对应的端口上即可，操作也比较简单，速度则取决于你的上行带宽。
-使用 frp 之类的内网穿透工具
-这种方案需要一个拥有公网 IP 的服务器，可以将内网的端口映射到这台服务器指定的端口，在外面直接访问服务器的端口即可。具体的配置方法也比较简单，在此不再赘述，这个方案的速度却决于你的这台服务器的带宽。
-直接上 VPN
-这种方案也需要一个拥有公网 IP 的服务器，相较上面两种方案，这个可能不是那么的方便。但有个好处就是可以透明地访问整个内网的任意主机，速度也是取决于这台服务器的带宽。
-考虑到后面可能会折腾好多东西(虽然目前就这一个)，干脆将搞个 VPN 直接支持整个内网的访问吧，这样也不用一个端口一个端口地去映射了。但缺点也显而易见，访问内网就得连接 VPN，还是有那么一点点麻烦。
-那么用哪个 VPN 方案呢？
-OpenVPN PPTP L2TP&amp;amp;IPSec WireGuard 先说 OpenVPN，这个安全性是毋庸置疑的，可以说是非常安全。但缺点是配置繁琐，而且性能可能不大好。
-PPTP 和 L2TP 在大部分平台中都有内置，配置起来非常方便，性能也挺好的，但不是很安全。
-WireGuard 是一个极其迅速而且简单的 VPN，它的目标是更快，更简单，更小，并且比 IPSec 更好用(来自 WireGuard 官网)。目前 WireGuard 已经合并进入了 Linux 内核。
-可以看一下性能对比(来自 WireGuard 官网)
-话不多说，开始安装吧。网络拓扑大致如下。
-其中：
-1.1.1.1 为服务器的公网 IP 192.168.1.0/24 为内网的 IP 段 192.168.2.0/24 为 WireGuard 的 VPN 内网网段 最终实现的效果是，电脑和手机通过连接 1.</description></item><item><title>C++ 类与类继承</title><link>/2018/03/29/cpp-learning-01/</link><pubDate>Thu, 29 Mar 2018 20:28:00 +0800</pubDate><guid>/2018/03/29/cpp-learning-01/</guid><description>构造函数与析构函数 构造函数 普通构造函数
-普通构造函数用来创建对象，如果该类位定义构造函数，则编译器会生成一个默认的空参数构造函数。
-复制构造函数
-复制构造函数，顾名思义，用于复制一个对象，定义如下:
-Test(const Test &amp;amp;t); 转换构造函数
-转换构造函数，将某个类型转为这个类的类型，定义如下:
-Test(const int &amp;amp;a); 使用转换构造函数可以实现类型的转换
-// 调用转换构造函数，实例化一个 Test 对象 Test a = 42; 如果不希望构造函数被用于隐式转换，可用 explicit 关键字阻止隐式转换。
-使用类的默认构造函数创建对象时，可能会出现下面的问题:
-// 创建一个 Test 类型的变量 a Test test; // 声明了一个返回值为 Test 的函数 // 在 调用 a.fun() 时，会报错: // error: request for member &amp;#39;fun&amp;#39; in &amp;#39;a&amp;#39;, which is of non-class type &amp;#39;Test()&amp;#39; Test a(); // 动态创建对象 Test *tp = new Test(); // 销毁动态创建的对象 delete tp; 析构函数 正好与构造函数相反，用来在该对象被销毁时，释放资源。定义如下:</description></item><item><title>Ubuntu 16.04 折腾</title><link>/2018/02/14/ubuntu-beautify/</link><pubDate>Wed, 14 Feb 2018 20:34:00 +0800</pubDate><guid>/2018/02/14/ubuntu-beautify/</guid><description>卸载无用软件
-sudo apt-get autoremove libreoffice-common sudo apt-get autoremove unity-webapps-common sudo apt-get autoremove thunderbird totem rhythmbox sudo apt-get autoremove simple-scan gnome-mahjongg aisleriot sudo apt-get autoremove gnome-mines cheese transmission-common gnome-orca webbrowser-app gnome-sudoku sudo apt-get autoremove onboard deja-dup 安装一些软件包
-sudo apt-get install git vim curl vim
-vim 配置文件 ~/.vimrc
-set nocompatible filetype off syntax enable &amp;#34; Others let g:rainbow_active = 1 set laststatus=2 set fileformats=unix,dos set nowrap set nobackup set nu set ts=4 set sw=4 set expandtab set autoindent set pastetoggle=&amp;lt;f3&amp;gt; au FileType python let b:delimitMate_nesting_quotes = [&amp;#39;&amp;#34;&amp;#39;] set pastetoggle=&amp;lt;f3&amp;gt; 设置 F3 切换粘贴模式，粘贴文本时防止自动缩进</description></item><item><title>并查集(Union-Find) 判断连通性</title><link>/2017/12/27/union-find/</link><pubDate>Wed, 27 Dec 2017 10:00:00 +0800</pubDate><guid>/2017/12/27/union-find/</guid><description>有如下的一些点
-每次连接其中两个点，然后判断任意两个点是否连通。
-比如上图中的 0 和 1，3 和 9 等等都是连通的，而 2 和 8 不连通。
-只有这么一些点，当然好判断，但如果有这么多呢
-那么，如何通过算法来判断其中两个点是否是连通的呢？
-如下图的状态，我们可以将其看作是三个组件(component)。
-判断两个点是否连通，直接判断它们是否在同一个组件中即可。 并为每个组件设置一个 id。
-设置一个数组，用来标识这个组件的 id
-初始状态下，所有点都是孤立状态，所以它们所在组件的 id 就是它们本身； 当两个点被连接后，将其中一个点的_标识_更改为另一个点的_标识_； 而当连接两个组件(含一个以上的点)时，可以将其中一个组件中的所有点的标识更改为另一个组件的标识。
-当判断两个点是否连接时，直接判断他们是否在同一个组件内。
-定义如下的方法
-public class UnionFind1 { private int[] ids; public void union(int p, int q) { int pid = ids[p]; int qid = ids[q]; for (int i = 0; i &amp;lt; ids.length; i++) { // 将所有属于 pid 的组件更换为 qid if (pid == ids[i]) { ids[i] = qid; } } } // 省略其他方法 } 测试一下</description></item><item><title>8086 汇编笔记 - 常用指令 - 03</title><link>/2017/11/16/8086-assembly-03/</link><pubDate>Thu, 16 Nov 2017 12:47:00 +0800</pubDate><guid>/2017/11/16/8086-assembly-03/</guid><description>数据传送 MOV dest, src 将 src 中的数据传送至 dest.
-MOV AX, BX ; CPU 的通用寄存器之间的数据传送 MOV AX, 1234H ; 立即数 -&amp;gt; 寄存器 MOV DS:[1234H] 5678H ; 立即数 -&amp;gt; 存储单元 MOV AX, DS:[1234H] ; 存储单元 -&amp;gt; 寄存器 MOV DS:[1234H], BX ; 寄存器 -&amp;gt; 存储单元 MOV AX, ES ; 段寄存器 -&amp;gt; 通用寄存器 MOV DS, AX ; 通用寄存器 -&amp;gt; 段寄存器 MOV ES, DS:[BX] ; 存储单元 -&amp;gt; 段寄存器 MOV DS:[1234H], CS ; 段寄存器 -&amp;gt; 存储单元 MOV WORD PTR DS:[0], 12H ; 将 12H 当作 字型数据 放入 DS:[0] 使用 MOV 指令时需注意以下几点:</description></item><item><title>8086 汇编笔记 - 程序代码结构 - 02</title><link>/2017/10/29/8086-assembly-02/</link><pubDate>Sun, 29 Oct 2017 17:28:00 +0800</pubDate><guid>/2017/10/29/8086-assembly-02/</guid><description>这里的汇编是 16位汇编, 在 Win7 64位 及以后已经不支持 目前有两种方法: 一是使用虚拟机, 另外就是 安装一个 DosBox 工具合集: AsmTool.zip 包含: masm 5和6 以及 DosBox
-先来一个 Hello World
-ASSUME CS:CODE ; 声明代码段 DATA SEGMENT ; 数据段 HELLOWORLD DB &amp;#39;Hello World&amp;#39;, &amp;#39;$&amp;#39; ; HelloWorld 字符串 DATA ENDS STACK SEGMENT STACK ; 堆栈段 DB 32 DUP(0) ; 声明一个32 bytes的连续空间当作堆栈段 STACK ENDS CODE SEGMENT ; 代码段 START: MOV AX, DATA MOV DS, AX ; 设置 DS 为数据段 MOV AH, 09H MOV DX, OFFSET HELLOWORLD INT 21H ; 调用 DOS 的中断, 将DX 指向的字符串打印出来 MOV AX, 4C00H INT 21H ; 程序退出 CODE ENDS END START ; 汇编结束, 并表示 程序起始位置为 标号 START 处 简化版 (MASM 6.</description></item><item><title>8086 汇编笔记 - 寄存器/寻址 - 01</title><link>/2017/10/29/8086-assembly-01/</link><pubDate>Sun, 29 Oct 2017 13:46:00 +0800</pubDate><guid>/2017/10/29/8086-assembly-01/</guid><description>8086 寄存器 寄存器 说明 AX (AH+AL) 累加器(Accumulator) BX (BH+BL) 基地址寄存器(Base Register) CX (CH+CL) 计数寄存器(Count Register) DX (DH+DL) 数据寄存器(Data Register) SP 堆栈指针寄存器, 指向栈顶(高地址) BP 一般和SP 联合使用, 用于寻找堆栈数据而不破坏SP SI 源变址寄存器 DI 目的变址寄存器 CS 代码段 段寄存器 DS 数据段 段寄存器 SS 堆栈段 段寄存器 ES 附加数据段 端寄存器, 一般在复制数据时配合DS 当作目的段寄存器使用 IP 指令指针, 指向下一条指令的地址 FLAGS 标志寄存器 (见下表) 标志寄存器
-标志 说明 CF 进位标志 (Carry), 如果运算的最高为产生进位或借位, 则CF=1 PF 奇偶位 (Parity), 如果运算结果的低8 位中的1的个数(二进制)为偶数个, 则PF=1 AF 辅助进位标志 (Auxiliary), 当运算结果的低4 位产生一个进位或借位, 则AF=1 ZF 零标志 (Zero), 若运算结果为0, 则ZF=1 SF 符号标志 (Signed), 当数据用补码表示时, 最高为表示符号为, SF与运算结果最高为相同 OF 溢出标志 (Overflow), 若运算中产生了溢出, 则OF=1 DF 方向标志 (Direction), 用于控制串操作指令, 如果DF=0, 则串操作过程中地址会增大, 否则地址会减小 IF 中断允许标志 (Interrupt), 若IF=0, 则CPU不能对可屏蔽中断做出响应, 否则CPU可以接受可屏蔽中断 TF 单步标志 (Trap), 如果TF=1, 则CPU按跟踪方式执行指令 数据寻址方式 立即寻址 操作数包含在指令中</description></item><item><title>《Android 开发艺术探索》笔记 - Activity - 01</title><link>/2017/10/24/android-dev-art-note-01/</link><pubDate>Tue, 24 Oct 2017 17:56:00 +0800</pubDate><guid>/2017/10/24/android-dev-art-note-01/</guid><description>Activity 生命周期 正常情况下 Activity 的生命周期 onCreate: 表示 Activity 正在被创建, 主要在这个方法中做一些初始化.
-onRestart: 表示 Activity 正在重新启动, 一般情况下, 当 Activity 从不可见变为可见时会被调用.
-onStart: 表示 Activity 正在启动, 但还无法与用户交互, 此时 Activity 还在后台.
-onResume: 表示 Activity 已经可见了, 和 onStart 的区别是现在 Activity 处于前台.
-onPause: 当其他 Activity 进入前台时会被调用, 这个方法里不能执行耗时的操作, 否则会影响新 Activity 的启动, 因为新 Activity 的 onResume 会在这个 Activity 的 onPause 执行完成后才会被调用.
-onStop: 表示 Activity 即将停止, 可以做一些回收工作, 但也不能太耗时.
-onDestroy: 表示 Activity 即将被销毁, 这是最后一个回调.
-上图来源于: https://developer.android.google.cn/reference/android/app/Activity.html
-Activity 的生命周期回调方法分为一下几种情况:
-首次启动, onCreate -&amp;gt; onStart -&amp;gt; onResume.</description></item><item><title>Hello World</title><link>/2017/10/20/hello-world/</link><pubDate>Fri, 20 Oct 2017 17:00:00 +0800</pubDate><guid>/2017/10/20/hello-world/</guid><description>Hello World</description></item><item><title>关于</title><link>/about/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/about/</guid><description>Hello World</description></item><item><title>归档</title><link>/archives/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/archives/</guid><description/></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Devld</title><link>/</link><description>Recent content on Devld</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Mon, 27 Jul 2020 10:54:48 +0800</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml"/><item><title>使用 WireGuard 无缝接入内网</title><link>/2020/07/27/wireguard-setup/</link><pubDate>Mon, 27 Jul 2020 10:54:48 +0800</pubDate><guid>/2020/07/27/wireguard-setup/</guid><description>&lt;p>去年心血来潮想搞个 NAS 放在家里，奈何囊肿羞涩，最终只能捡垃圾捡了个蜗牛星际，又因为种种原因吃了近一年的灰。最近又比较心血来潮，想起来了在角落中已经蒙尘的蜗牛星际。&lt;/p>
+&lt;p>在某宝上买的机子已经由卖家预装了黑群晖，用起来也是完全的傻瓜式操作，免去了自己折腾各种软件浪费时间。目前仅仅作为一个 &lt;code>samba&lt;/code> 文件服务器，在局域网中共享一些视频或者其他资源。&lt;/p>
+&lt;!-- more -->
+&lt;p>OK，开始正题。现在需要支持在外面远程控制 NAS 下载一些东西。目前有这么几种方案：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>直接端口映射到内网的 NAS&lt;/p>
+&lt;p>这种方案需要你有一个公网 IP，在路由器中将需要外网访问的端口直接映射到内网的 NAS 对应的端口上即可，操作也比较简单，速度则取决于你的上行带宽。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>使用 &lt;a href="https://github.com/fatedier/frp">frp&lt;/a> 之类的内网穿透工具&lt;/p>
+&lt;p>这种方案需要一个拥有公网 IP 的服务器，可以将内网的端口映射到这台服务器指定的端口，在外面直接访问服务器的端口即可。具体的配置方法也比较简单，在此不再赘述，这个方案的速度却决于你的这台服务器的带宽。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>直接上 VPN&lt;/p>
+&lt;p>这种方案也需要一个拥有公网 IP 的服务器，相较上面两种方案，这个可能不是那么的方便。但有个好处就是可以透明地访问整个内网的任意主机，速度也是取决于这台服务器的带宽。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>考虑到后面可能会折腾好多东西(虽然目前就这一个)，干脆将搞个 VPN 直接支持整个内网的访问吧，这样也不用一个端口一个端口地去映射了。但缺点也显而易见，访问内网就得连接 VPN，还是有那么一点点麻烦。&lt;/p>
+&lt;p>那么用哪个 VPN 方案呢？&lt;/p>
+&lt;ul>
+&lt;li>OpenVPN&lt;/li>
+&lt;li>PPTP&lt;/li>
+&lt;li>L2TP&amp;amp;IPSec&lt;/li>
+&lt;li>WireGuard&lt;/li>
+&lt;/ul>
+&lt;p>先说 OpenVPN，这个安全性是毋庸置疑的，可以说是非常安全。但缺点是配置繁琐，而且性能可能不大好。&lt;/p>
+&lt;p>PPTP 和 L2TP 在大部分平台中都有内置，配置起来非常方便，性能也挺好的，但不是很安全。&lt;/p>
+&lt;p>WireGuard 是一个极其迅速而且简单的 VPN，它的目标是更快，更简单，更小，并且比 IPSec 更好用(来自 WireGuard 官网)。目前 WireGuard 已经合并进入了 Linux 内核。&lt;/p>
+&lt;p>可以看一下性能对比(来自 &lt;a href="https://www.wireguard.com/performance/#results">WireGuard 官网&lt;/a>)&lt;/p>
+&lt;p>&lt;img src="image-20200727151702974.png" alt="image-20200727151702974">&lt;/p>
+&lt;p>话不多说，开始安装吧。网络拓扑大致如下。&lt;/p>
+&lt;p>&lt;img src="wireguard-network.svg" alt="wireguard-network">&lt;/p>
+&lt;p>其中：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>1.1.1.1&lt;/code> 为服务器的公网 IP&lt;/li>
+&lt;li>&lt;code>192.168.1.0/24&lt;/code> 为内网的 IP 段&lt;/li>
+&lt;li>&lt;code>192.168.2.0/24&lt;/code> 为 WireGuard 的 VPN 内网网段&lt;/li>
+&lt;/ul>
+&lt;p>最终实现的效果是，电脑和手机通过连接 &lt;code>1.1.1.1&lt;/code> 上的 VPN 服务，接入其他两个网段。&lt;/p></description></item><item><title>C++ 类与类继承</title><link>/2018/03/29/cpp-learning-01/</link><pubDate>Thu, 29 Mar 2018 20:28:00 +0800</pubDate><guid>/2018/03/29/cpp-learning-01/</guid><description>&lt;h3 id="构造函数与析构函数">构造函数与析构函数&lt;/h3>
+&lt;h4 id="构造函数">构造函数&lt;/h4>
+&lt;ul>
+&lt;li>
+&lt;p>普通构造函数&lt;/p>
+&lt;p>普通构造函数用来创建对象，如果该类位定义构造函数，则编译器会生成一个默认的空参数构造函数。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>复制构造函数&lt;/p>
+&lt;p>复制构造函数，顾名思义，用于复制一个对象，定义如下:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">Test&lt;/span>(&lt;span style="color:#c678dd">const&lt;/span> &lt;span style="color:#e06c75">Test&lt;/span> &lt;span style="color:#56b6c2">&amp;amp;&lt;/span>&lt;span style="color:#e06c75">t&lt;/span>);
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>转换构造函数&lt;/p>
+&lt;p>转换构造函数，将某个类型转为这个类的类型，定义如下:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">Test&lt;/span>(&lt;span style="color:#c678dd">const&lt;/span> &lt;span style="color:#e5c07b">int&lt;/span> &lt;span style="color:#56b6c2">&amp;amp;&lt;/span>&lt;span style="color:#e06c75">a&lt;/span>);
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>使用转换构造函数可以实现类型的转换&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">// 调用转换构造函数，实例化一个 Test 对象
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">&lt;/span>&lt;span style="color:#e06c75">Test&lt;/span> &lt;span style="color:#e06c75">a&lt;/span> &lt;span style="color:#56b6c2">=&lt;/span> &lt;span style="color:#d19a66">42&lt;/span>;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果不希望构造函数被用于隐式转换，可用 &lt;code>explicit&lt;/code> 关键字阻止隐式转换。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>使用类的默认构造函数创建对象时，可能会出现下面的问题:&lt;/p>
+&lt;!-- more -->
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">// 创建一个 Test 类型的变量 a
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">&lt;/span>&lt;span style="color:#e06c75">Test&lt;/span> &lt;span style="color:#e06c75">test&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">// 声明了一个返回值为 Test 的函数
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">// 在 调用 a.fun() 时，会报错: 
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">// error: request for member &amp;#39;fun&amp;#39; in &amp;#39;a&amp;#39;, which is of non-class type &amp;#39;Test()&amp;#39;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">&lt;/span>&lt;span style="color:#e06c75">Test&lt;/span> &lt;span style="color:#61afef;font-weight:bold">a&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">// 动态创建对象
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">&lt;/span>&lt;span style="color:#e06c75">Test&lt;/span> &lt;span style="color:#56b6c2">*&lt;/span>&lt;span style="color:#e06c75">tp&lt;/span> &lt;span style="color:#56b6c2">=&lt;/span> &lt;span style="color:#c678dd">new&lt;/span> &lt;span style="color:#e06c75">Test&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">// 销毁动态创建的对象
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#7f848e">&lt;/span>&lt;span style="color:#c678dd">delete&lt;/span> &lt;span style="color:#e06c75">tp&lt;/span>;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="析构函数">析构函数&lt;/h4>
+&lt;p>正好与构造函数相反，用来在该对象被销毁时，释放资源。定义如下:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#56b6c2">~&lt;/span>&lt;span style="color:#e06c75">Test&lt;/span>();
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>非动态创建的对象会在合适的时刻由编译器自动调用析构函数销毁该对象，而由 &lt;code>new&lt;/code> 关键字创建的对象则需要手动使用 &lt;code>delete&lt;/code> 销毁对象释放内存。&lt;/p></description></item><item><title>Ubuntu 16.04 折腾</title><link>/2018/02/14/ubuntu-beautify/</link><pubDate>Wed, 14 Feb 2018 20:34:00 +0800</pubDate><guid>/2018/02/14/ubuntu-beautify/</guid><description>&lt;ol>
+&lt;li>
+&lt;p>卸载无用软件&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>sudo apt-get autoremove libreoffice-common
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get autoremove unity-webapps-common
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get autoremove thunderbird totem rhythmbox
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get autoremove simple-scan gnome-mahjongg aisleriot
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get autoremove gnome-mines cheese transmission-common gnome-orca webbrowser-app gnome-sudoku
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get autoremove onboard deja-dup
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>安装一些软件包&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>sudo apt-get install git vim curl
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>
+&lt;p>vim&lt;/p>
+&lt;p>vim 配置文件 &lt;code>~/.vimrc&lt;/code>&lt;/p>
+&lt;pre tabindex="0">&lt;code>set nocompatible
+filetype off 
+syntax enable
+
+&amp;#34; Others
+let g:rainbow_active = 1 
+set laststatus=2
+set fileformats=unix,dos
+set nowrap
+set nobackup
+set nu
+set ts=4
+set sw=4
+set expandtab
+set autoindent
+set pastetoggle=&amp;lt;f3&amp;gt;
+au FileType python let b:delimitMate_nesting_quotes = [&amp;#39;&amp;#34;&amp;#39;]
+&lt;/code>&lt;/pre>&lt;p>&lt;code>set pastetoggle=&amp;lt;f3&amp;gt;&lt;/code> 设置 &lt;code>F3&lt;/code> 切换粘贴模式，粘贴文本时防止自动缩进&lt;/p></description></item><item><title>并查集(Union-Find) 判断连通性</title><link>/2017/12/27/union-find/</link><pubDate>Wed, 27 Dec 2017 10:00:00 +0800</pubDate><guid>/2017/12/27/union-find/</guid><description>&lt;p>有如下的一些点&lt;/p>
+&lt;p>&lt;img src="union-find-02.png" alt="Points">&lt;/p>
+&lt;p>每次连接其中两个点，然后判断任意两个点是否连通。&lt;/p>
+&lt;p>&lt;img src="union-find-01.png" alt="Points">&lt;/p>
+&lt;p>比如上图中的 0 和 1，3 和 9 等等都是连通的，而 2 和 8 不连通。&lt;/p>
+&lt;p>只有这么一些点，当然好判断，但如果有这么多呢&lt;/p>
+&lt;p>&lt;img src="union-find-03.png" alt="Points">&lt;/p>
+&lt;p>那么，如何通过算法来判断其中两个点是否是连通的呢？&lt;/p>
+&lt;!-- more -->
+&lt;p>如下图的状态，我们可以将其看作是三个组件(component)。&lt;/p>
+&lt;p>&lt;img src="union-find-04.png" alt="Components">&lt;/p>
+&lt;p>判断两个点是否连通，直接判断它们是否在同一个组件中即可。
+并为每个组件设置一个 id。&lt;/p>
+&lt;p>设置一个数组，用来标识这个组件的 id&lt;/p>
+&lt;p>初始状态下，所有点都是孤立状态，所以它们所在组件的 id 就是它们本身；
+当两个&lt;strong>点&lt;/strong>被连接后，将其中一个点的_标识_更改为另一个点的_标识_；
+而当连接两个&lt;strong>组件&lt;/strong>(含一个以上的点)时，可以将其中一个组件中的所有点的标识更改为另一个组件的标识。&lt;/p>
+&lt;p>当判断两个点是否连接时，直接判断他们是否在同一个组件内。&lt;/p>
+&lt;p>定义如下的方法&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#c678dd">public&lt;/span> &lt;span style="color:#c678dd">class&lt;/span> &lt;span style="color:#e5c07b">UnionFind1&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#c678dd">private&lt;/span> &lt;span style="color:#e5c07b">int&lt;/span>&lt;span style="color:#56b6c2">[]&lt;/span> &lt;span style="color:#e06c75">ids&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#c678dd">public&lt;/span> &lt;span style="color:#e5c07b">void&lt;/span> &lt;span style="color:#61afef;font-weight:bold">union&lt;/span>(&lt;span style="color:#e5c07b">int&lt;/span> &lt;span style="color:#e06c75">p&lt;/span>, &lt;span style="color:#e5c07b">int&lt;/span> &lt;span style="color:#e06c75">q&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e5c07b">int&lt;/span> &lt;span style="color:#e06c75">pid&lt;/span> &lt;span style="color:#56b6c2">=&lt;/span> &lt;span style="color:#e06c75">ids&lt;/span>&lt;span style="color:#56b6c2">[&lt;/span>&lt;span style="color:#e06c75">p&lt;/span>&lt;span style="color:#56b6c2">]&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e5c07b">int&lt;/span> &lt;span style="color:#e06c75">qid&lt;/span> &lt;span style="color:#56b6c2">=&lt;/span> &lt;span style="color:#e06c75">ids&lt;/span>&lt;span style="color:#56b6c2">[&lt;/span>&lt;span style="color:#e06c75">q&lt;/span>&lt;span style="color:#56b6c2">]&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#c678dd">for&lt;/span> (&lt;span style="color:#e5c07b">int&lt;/span> &lt;span style="color:#e06c75">i&lt;/span> &lt;span style="color:#56b6c2">=&lt;/span> &lt;span style="color:#e06c75">0&lt;/span>; &lt;span style="color:#e06c75">i&lt;/span> &lt;span style="color:#56b6c2">&amp;lt;&lt;/span> &lt;span style="color:#e06c75">ids&lt;/span>.&lt;span style="color:#e06c75">length&lt;/span>; &lt;span style="color:#e06c75">i&lt;/span>&lt;span style="color:#56b6c2">++&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#7f848e">// 将所有属于 pid 的组件更换为 qid&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#c678dd">if&lt;/span> (&lt;span style="color:#e06c75">pid&lt;/span> &lt;span style="color:#56b6c2">==&lt;/span> &lt;span style="color:#e06c75">ids&lt;/span>&lt;span style="color:#56b6c2">[&lt;/span>&lt;span style="color:#e06c75">i&lt;/span>&lt;span style="color:#56b6c2">]&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e06c75">ids&lt;/span>&lt;span style="color:#56b6c2">[&lt;/span>&lt;span style="color:#e06c75">i&lt;/span>&lt;span style="color:#56b6c2">]&lt;/span> &lt;span style="color:#56b6c2">=&lt;/span> &lt;span style="color:#e06c75">qid&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#7f848e">// 省略其他方法&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>测试一下&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">UnionFind1&lt;/span> &lt;span style="color:#e06c75">uf&lt;/span> &lt;span style="color:#56b6c2">=&lt;/span> &lt;span style="color:#c678dd">new&lt;/span> &lt;span style="color:#e06c75">UnionFind1&lt;/span>(&lt;span style="color:#e06c75">10&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">uf&lt;/span>.&lt;span style="color:#e06c75">union&lt;/span>(&lt;span style="color:#e06c75">0&lt;/span>, &lt;span style="color:#e06c75">1&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">uf&lt;/span>.&lt;span style="color:#e06c75">union&lt;/span>(&lt;span style="color:#e06c75">5&lt;/span>, &lt;span style="color:#e06c75">1&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">uf&lt;/span>.&lt;span style="color:#e06c75">union&lt;/span>(&lt;span style="color:#e06c75">6&lt;/span>, &lt;span style="color:#e06c75">5&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">uf&lt;/span>.&lt;span style="color:#e06c75">union&lt;/span>(&lt;span style="color:#e06c75">2&lt;/span>, &lt;span style="color:#e06c75">7&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">uf&lt;/span>.&lt;span style="color:#e06c75">union&lt;/span>(&lt;span style="color:#e06c75">3&lt;/span>, &lt;span style="color:#e06c75">8&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">uf&lt;/span>.&lt;span style="color:#e06c75">union&lt;/span>(&lt;span style="color:#e06c75">4&lt;/span>, &lt;span style="color:#e06c75">9&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">uf&lt;/span>.&lt;span style="color:#e06c75">union&lt;/span>(&lt;span style="color:#e06c75">3&lt;/span>, &lt;span style="color:#e06c75">4&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">System&lt;/span>.&lt;span style="color:#e06c75">out&lt;/span>.&lt;span style="color:#e06c75">println&lt;/span>(&lt;span style="color:#e06c75">uf&lt;/span>.&lt;span style="color:#e06c75">connected&lt;/span>(&lt;span style="color:#e06c75">0&lt;/span>, &lt;span style="color:#e06c75">6&lt;/span>));
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>执行上述操作后&lt;/p></description></item><item><title>8086 汇编笔记 - 常用指令 - 03</title><link>/2017/11/16/8086-assembly-03/</link><pubDate>Thu, 16 Nov 2017 12:47:00 +0800</pubDate><guid>/2017/11/16/8086-assembly-03/</guid><description>&lt;h3 id="数据传送">数据传送&lt;/h3>
+&lt;ol>
+&lt;li>MOV dest, src&lt;/li>
+&lt;/ol>
+&lt;p>将 src 中的数据传送至 dest.&lt;/p>
+&lt;pre tabindex="0">&lt;code class="language-x86asm" data-lang="x86asm">MOV AX, BX ; CPU 的通用寄存器之间的数据传送
+MOV AX, 1234H ; 立即数 -&amp;gt; 寄存器
+MOV DS:[1234H] 5678H ; 立即数 -&amp;gt; 存储单元
+
+MOV AX, DS:[1234H] ; 存储单元 -&amp;gt; 寄存器
+MOV DS:[1234H], BX ; 寄存器 -&amp;gt; 存储单元
+
+MOV AX, ES ; 段寄存器 -&amp;gt; 通用寄存器
+MOV DS, AX ; 通用寄存器 -&amp;gt; 段寄存器
+MOV ES, DS:[BX] ; 存储单元 -&amp;gt; 段寄存器
+MOV DS:[1234H], CS ; 段寄存器 -&amp;gt; 存储单元
+
+MOV WORD PTR DS:[0], 12H ; 将 12H 当作 字型数据 放入 DS:[0]
+&lt;/code>&lt;/pre> &lt;!-- more -->
+&lt;p>使用 MOV 指令时需注意以下几点:&lt;/p></description></item><item><title>8086 汇编笔记 - 程序代码结构 - 02</title><link>/2017/10/29/8086-assembly-02/</link><pubDate>Sun, 29 Oct 2017 17:28:00 +0800</pubDate><guid>/2017/10/29/8086-assembly-02/</guid><description>&lt;blockquote>
+&lt;p>这里的汇编是 16位汇编, 在 Win7 64位 及以后已经不支持
+目前有两种方法: 一是使用虚拟机, 另外就是 安装一个 &lt;code>DosBox&lt;/code>
+工具合集: &lt;a href="https://ss.devld.me/#/_/Sharing?h=download&amp;amp;e=AsmTools.zip">AsmTool.zip&lt;/a> 包含: masm 5和6 以及 DosBox&lt;/p>&lt;/blockquote>
+&lt;p>先来一个 Hello World&lt;/p>
+&lt;pre tabindex="0">&lt;code class="language-x86asm" data-lang="x86asm">ASSUME CS:CODE ; 声明代码段
+
+DATA SEGMENT ; 数据段
+ HELLOWORLD DB &amp;#39;Hello World&amp;#39;, &amp;#39;$&amp;#39; ; HelloWorld 字符串
+DATA ENDS
+
+STACK SEGMENT STACK ; 堆栈段
+ DB 32 DUP(0) ; 声明一个32 bytes的连续空间当作堆栈段
+STACK ENDS
+
+CODE SEGMENT ; 代码段
+START:
+ MOV AX, DATA 
+ MOV DS, AX ; 设置 DS 为数据段
+
+ MOV AH, 09H
+ MOV DX, OFFSET HELLOWORLD
+ INT 21H ; 调用 DOS 的中断, 将DX 指向的字符串打印出来
+
+ MOV AX, 4C00H
+ INT 21H ; 程序退出
+CODE ENDS
+END START ; 汇编结束, 并表示 程序起始位置为 标号 START 处
+&lt;/code>&lt;/pre>&lt;p>简化版 (MASM 6.x+)&lt;/p></description></item><item><title>8086 汇编笔记 - 寄存器/寻址 - 01</title><link>/2017/10/29/8086-assembly-01/</link><pubDate>Sun, 29 Oct 2017 13:46:00 +0800</pubDate><guid>/2017/10/29/8086-assembly-01/</guid><description>&lt;h3 id="8086-寄存器">8086 寄存器&lt;/h3>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>寄存器&lt;/th>
+ &lt;th>说明&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>AX (AH+AL)&lt;/td>
+ &lt;td>累加器(Accumulator)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>BX (BH+BL)&lt;/td>
+ &lt;td>基地址寄存器(Base Register)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>CX (CH+CL)&lt;/td>
+ &lt;td>计数寄存器(Count Register)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>DX (DH+DL)&lt;/td>
+ &lt;td>数据寄存器(Data Register)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SP&lt;/td>
+ &lt;td>堆栈指针寄存器, 指向栈顶(高地址)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>BP&lt;/td>
+ &lt;td>一般和SP 联合使用, 用于寻找堆栈数据而不破坏SP&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SI&lt;/td>
+ &lt;td>源变址寄存器&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>DI&lt;/td>
+ &lt;td>目的变址寄存器&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>CS&lt;/td>
+ &lt;td>代码段 段寄存器&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>DS&lt;/td>
+ &lt;td>数据段 段寄存器&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SS&lt;/td>
+ &lt;td>堆栈段 段寄存器&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>ES&lt;/td>
+ &lt;td>附加数据段 端寄存器, 一般在复制数据时配合DS 当作目的段寄存器使用&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>IP&lt;/td>
+ &lt;td>指令指针, 指向下一条指令的地址&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>FLAGS&lt;/td>
+ &lt;td>标志寄存器 (见下表)&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>标志寄存器&lt;/p>
+&lt;!-- more -->
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>标志&lt;/th>
+ &lt;th>说明&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>CF&lt;/td>
+ &lt;td>进位标志 (Carry), 如果运算的最高为产生进位或借位, 则CF=1&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>PF&lt;/td>
+ &lt;td>奇偶位 (Parity), 如果运算结果的低8 位中的1的个数(二进制)为偶数个, 则PF=1&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>AF&lt;/td>
+ &lt;td>辅助进位标志 (Auxiliary), 当运算结果的低4 位产生一个进位或借位, 则AF=1&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>ZF&lt;/td>
+ &lt;td>零标志 (Zero), 若运算结果为0, 则ZF=1&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SF&lt;/td>
+ &lt;td>符号标志 (Signed), 当数据用补码表示时, 最高为表示符号为, SF与运算结果最高为相同&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>OF&lt;/td>
+ &lt;td>溢出标志 (Overflow), 若运算中产生了溢出, 则OF=1&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>DF&lt;/td>
+ &lt;td>方向标志 (Direction), 用于控制串操作指令, 如果DF=0, 则串操作过程中地址会增大, 否则地址会减小&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>IF&lt;/td>
+ &lt;td>中断允许标志 (Interrupt), 若IF=0, 则CPU不能对可屏蔽中断做出响应, 否则CPU可以接受可屏蔽中断&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>TF&lt;/td>
+ &lt;td>单步标志 (Trap), 如果TF=1, 则CPU按跟踪方式执行指令&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>&lt;img src="8086-flags-reg.png" alt="flags">&lt;/p></description></item><item><title>《Android 开发艺术探索》笔记 - Activity - 01</title><link>/2017/10/24/android-dev-art-note-01/</link><pubDate>Tue, 24 Oct 2017 17:56:00 +0800</pubDate><guid>/2017/10/24/android-dev-art-note-01/</guid><description>&lt;h3 id="activity-生命周期">Activity 生命周期&lt;/h3>
+&lt;h4 id="正常情况下-activity-的生命周期">正常情况下 Activity 的生命周期&lt;/h4>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>onCreate&lt;/strong>: 表示 Activity 正在被创建, 主要在这个方法中做一些初始化.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>onRestart&lt;/strong>: 表示 Activity 正在重新启动, 一般情况下, 当 Activity 从不可见变为可见时会被调用.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>onStart&lt;/strong>: 表示 Activity 正在启动, 但还无法与用户交互, 此时 Activity 还在后台.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>onResume&lt;/strong>: 表示 Activity 已经可见了, 和 onStart 的区别是现在 Activity 处于前台.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>onPause&lt;/strong>: 当其他 Activity 进入前台时会被调用, 这个方法里不能执行耗时的操作, 否则会影响新 Activity 的启动, 因为新 Activity 的 onResume 会在这个 Activity 的 onPause 执行完成后才会被调用.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>onStop&lt;/strong>: 表示 Activity 即将停止, 可以做一些回收工作, 但也不能太耗时.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>onDestroy&lt;/strong>: 表示 Activity 即将被销毁, 这是最后一个回调.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;!-- more -->
+&lt;p>&lt;img src="activity-lifecycle.png" alt="Activity Life Cycle">&lt;/p>
+&lt;p>上图来源于: &lt;a href="https://developer.android.google.cn/reference/android/app/Activity.html">https://developer.android.google.cn/reference/android/app/Activity.html&lt;/a>&lt;/p></description></item><item><title>Hello World</title><link>/2017/10/20/hello-world/</link><pubDate>Fri, 20 Oct 2017 17:00:00 +0800</pubDate><guid>/2017/10/20/hello-world/</guid><description>&lt;p>Hello World&lt;/p></description></item><item><title>关于</title><link>/about/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/about/</guid><description>&lt;p>Hello World&lt;/p>
+
+&lt;div style="text-align: center; color: #999; letter-spacing: 4px">
+ &lt;time id="current-time" style="font-size: 24px">&lt;/time>
+&lt;/div>
+&lt;script>
+const timeEl = document.getElementById('current-time');
+timeEl.innerHTML = (new Date()).toLocaleString();
+setInterval(function() {
+ timeEl.innerHTML = (new Date()).toLocaleString();
+}, 1000)
+&lt;/script></description></item><item><title>归档</title><link>/archives/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/archives/</guid><description/></item></channel></rss>

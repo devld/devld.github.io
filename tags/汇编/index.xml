@@ -1,5 +1,163 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>汇编 on Devld</title><link>/tags/%E6%B1%87%E7%BC%96/</link><description>Recent content in 汇编 on Devld</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 16 Nov 2017 12:47:00 +0800</lastBuildDate><atom:link href="/tags/%E6%B1%87%E7%BC%96/index.xml" rel="self" type="application/rss+xml"/><item><title>8086 汇编笔记 - 常用指令 - 03</title><link>/2017/11/16/8086-assembly-03/</link><pubDate>Thu, 16 Nov 2017 12:47:00 +0800</pubDate><guid>/2017/11/16/8086-assembly-03/</guid><description>数据传送 MOV dest, src 将 src 中的数据传送至 dest.
-MOV AX, BX ; CPU 的通用寄存器之间的数据传送 MOV AX, 1234H ; 立即数 -&amp;gt; 寄存器 MOV DS:[1234H] 5678H ; 立即数 -&amp;gt; 存储单元 MOV AX, DS:[1234H] ; 存储单元 -&amp;gt; 寄存器 MOV DS:[1234H], BX ; 寄存器 -&amp;gt; 存储单元 MOV AX, ES ; 段寄存器 -&amp;gt; 通用寄存器 MOV DS, AX ; 通用寄存器 -&amp;gt; 段寄存器 MOV ES, DS:[BX] ; 存储单元 -&amp;gt; 段寄存器 MOV DS:[1234H], CS ; 段寄存器 -&amp;gt; 存储单元 MOV WORD PTR DS:[0], 12H ; 将 12H 当作 字型数据 放入 DS:[0] 使用 MOV 指令时需注意以下几点:</description></item><item><title>8086 汇编笔记 - 程序代码结构 - 02</title><link>/2017/10/29/8086-assembly-02/</link><pubDate>Sun, 29 Oct 2017 17:28:00 +0800</pubDate><guid>/2017/10/29/8086-assembly-02/</guid><description>这里的汇编是 16位汇编, 在 Win7 64位 及以后已经不支持 目前有两种方法: 一是使用虚拟机, 另外就是 安装一个 DosBox 工具合集: AsmTool.zip 包含: masm 5和6 以及 DosBox
-先来一个 Hello World
-ASSUME CS:CODE ; 声明代码段 DATA SEGMENT ; 数据段 HELLOWORLD DB &amp;#39;Hello World&amp;#39;, &amp;#39;$&amp;#39; ; HelloWorld 字符串 DATA ENDS STACK SEGMENT STACK ; 堆栈段 DB 32 DUP(0) ; 声明一个32 bytes的连续空间当作堆栈段 STACK ENDS CODE SEGMENT ; 代码段 START: MOV AX, DATA MOV DS, AX ; 设置 DS 为数据段 MOV AH, 09H MOV DX, OFFSET HELLOWORLD INT 21H ; 调用 DOS 的中断, 将DX 指向的字符串打印出来 MOV AX, 4C00H INT 21H ; 程序退出 CODE ENDS END START ; 汇编结束, 并表示 程序起始位置为 标号 START 处 简化版 (MASM 6.</description></item><item><title>8086 汇编笔记 - 寄存器/寻址 - 01</title><link>/2017/10/29/8086-assembly-01/</link><pubDate>Sun, 29 Oct 2017 13:46:00 +0800</pubDate><guid>/2017/10/29/8086-assembly-01/</guid><description>8086 寄存器 寄存器 说明 AX (AH+AL) 累加器(Accumulator) BX (BH+BL) 基地址寄存器(Base Register) CX (CH+CL) 计数寄存器(Count Register) DX (DH+DL) 数据寄存器(Data Register) SP 堆栈指针寄存器, 指向栈顶(高地址) BP 一般和SP 联合使用, 用于寻找堆栈数据而不破坏SP SI 源变址寄存器 DI 目的变址寄存器 CS 代码段 段寄存器 DS 数据段 段寄存器 SS 堆栈段 段寄存器 ES 附加数据段 端寄存器, 一般在复制数据时配合DS 当作目的段寄存器使用 IP 指令指针, 指向下一条指令的地址 FLAGS 标志寄存器 (见下表) 标志寄存器
-标志 说明 CF 进位标志 (Carry), 如果运算的最高为产生进位或借位, 则CF=1 PF 奇偶位 (Parity), 如果运算结果的低8 位中的1的个数(二进制)为偶数个, 则PF=1 AF 辅助进位标志 (Auxiliary), 当运算结果的低4 位产生一个进位或借位, 则AF=1 ZF 零标志 (Zero), 若运算结果为0, 则ZF=1 SF 符号标志 (Signed), 当数据用补码表示时, 最高为表示符号为, SF与运算结果最高为相同 OF 溢出标志 (Overflow), 若运算中产生了溢出, 则OF=1 DF 方向标志 (Direction), 用于控制串操作指令, 如果DF=0, 则串操作过程中地址会增大, 否则地址会减小 IF 中断允许标志 (Interrupt), 若IF=0, 则CPU不能对可屏蔽中断做出响应, 否则CPU可以接受可屏蔽中断 TF 单步标志 (Trap), 如果TF=1, 则CPU按跟踪方式执行指令 数据寻址方式 立即寻址 操作数包含在指令中</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>汇编 on Devld</title><link>/tags/%E6%B1%87%E7%BC%96/</link><description>Recent content in 汇编 on Devld</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Thu, 16 Nov 2017 12:47:00 +0800</lastBuildDate><atom:link href="/tags/%E6%B1%87%E7%BC%96/index.xml" rel="self" type="application/rss+xml"/><item><title>8086 汇编笔记 - 常用指令 - 03</title><link>/2017/11/16/8086-assembly-03/</link><pubDate>Thu, 16 Nov 2017 12:47:00 +0800</pubDate><guid>/2017/11/16/8086-assembly-03/</guid><description>&lt;h3 id="数据传送">数据传送&lt;/h3>
+&lt;ol>
+&lt;li>MOV dest, src&lt;/li>
+&lt;/ol>
+&lt;p>将 src 中的数据传送至 dest.&lt;/p>
+&lt;pre tabindex="0">&lt;code class="language-x86asm" data-lang="x86asm">MOV AX, BX ; CPU 的通用寄存器之间的数据传送
+MOV AX, 1234H ; 立即数 -&amp;gt; 寄存器
+MOV DS:[1234H] 5678H ; 立即数 -&amp;gt; 存储单元
+
+MOV AX, DS:[1234H] ; 存储单元 -&amp;gt; 寄存器
+MOV DS:[1234H], BX ; 寄存器 -&amp;gt; 存储单元
+
+MOV AX, ES ; 段寄存器 -&amp;gt; 通用寄存器
+MOV DS, AX ; 通用寄存器 -&amp;gt; 段寄存器
+MOV ES, DS:[BX] ; 存储单元 -&amp;gt; 段寄存器
+MOV DS:[1234H], CS ; 段寄存器 -&amp;gt; 存储单元
+
+MOV WORD PTR DS:[0], 12H ; 将 12H 当作 字型数据 放入 DS:[0]
+&lt;/code>&lt;/pre> &lt;!-- more -->
+&lt;p>使用 MOV 指令时需注意以下几点:&lt;/p></description></item><item><title>8086 汇编笔记 - 程序代码结构 - 02</title><link>/2017/10/29/8086-assembly-02/</link><pubDate>Sun, 29 Oct 2017 17:28:00 +0800</pubDate><guid>/2017/10/29/8086-assembly-02/</guid><description>&lt;blockquote>
+&lt;p>这里的汇编是 16位汇编, 在 Win7 64位 及以后已经不支持
+目前有两种方法: 一是使用虚拟机, 另外就是 安装一个 &lt;code>DosBox&lt;/code>
+工具合集: &lt;a href="https://ss.devld.me/#/_/Sharing?h=download&amp;amp;e=AsmTools.zip">AsmTool.zip&lt;/a> 包含: masm 5和6 以及 DosBox&lt;/p>&lt;/blockquote>
+&lt;p>先来一个 Hello World&lt;/p>
+&lt;pre tabindex="0">&lt;code class="language-x86asm" data-lang="x86asm">ASSUME CS:CODE ; 声明代码段
+
+DATA SEGMENT ; 数据段
+ HELLOWORLD DB &amp;#39;Hello World&amp;#39;, &amp;#39;$&amp;#39; ; HelloWorld 字符串
+DATA ENDS
+
+STACK SEGMENT STACK ; 堆栈段
+ DB 32 DUP(0) ; 声明一个32 bytes的连续空间当作堆栈段
+STACK ENDS
+
+CODE SEGMENT ; 代码段
+START:
+ MOV AX, DATA 
+ MOV DS, AX ; 设置 DS 为数据段
+
+ MOV AH, 09H
+ MOV DX, OFFSET HELLOWORLD
+ INT 21H ; 调用 DOS 的中断, 将DX 指向的字符串打印出来
+
+ MOV AX, 4C00H
+ INT 21H ; 程序退出
+CODE ENDS
+END START ; 汇编结束, 并表示 程序起始位置为 标号 START 处
+&lt;/code>&lt;/pre>&lt;p>简化版 (MASM 6.x+)&lt;/p></description></item><item><title>8086 汇编笔记 - 寄存器/寻址 - 01</title><link>/2017/10/29/8086-assembly-01/</link><pubDate>Sun, 29 Oct 2017 13:46:00 +0800</pubDate><guid>/2017/10/29/8086-assembly-01/</guid><description>&lt;h3 id="8086-寄存器">8086 寄存器&lt;/h3>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>寄存器&lt;/th>
+ &lt;th>说明&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>AX (AH+AL)&lt;/td>
+ &lt;td>累加器(Accumulator)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>BX (BH+BL)&lt;/td>
+ &lt;td>基地址寄存器(Base Register)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>CX (CH+CL)&lt;/td>
+ &lt;td>计数寄存器(Count Register)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>DX (DH+DL)&lt;/td>
+ &lt;td>数据寄存器(Data Register)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SP&lt;/td>
+ &lt;td>堆栈指针寄存器, 指向栈顶(高地址)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>BP&lt;/td>
+ &lt;td>一般和SP 联合使用, 用于寻找堆栈数据而不破坏SP&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SI&lt;/td>
+ &lt;td>源变址寄存器&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>DI&lt;/td>
+ &lt;td>目的变址寄存器&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>CS&lt;/td>
+ &lt;td>代码段 段寄存器&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>DS&lt;/td>
+ &lt;td>数据段 段寄存器&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SS&lt;/td>
+ &lt;td>堆栈段 段寄存器&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>ES&lt;/td>
+ &lt;td>附加数据段 端寄存器, 一般在复制数据时配合DS 当作目的段寄存器使用&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>IP&lt;/td>
+ &lt;td>指令指针, 指向下一条指令的地址&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>FLAGS&lt;/td>
+ &lt;td>标志寄存器 (见下表)&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>标志寄存器&lt;/p>
+&lt;!-- more -->
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>标志&lt;/th>
+ &lt;th>说明&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>CF&lt;/td>
+ &lt;td>进位标志 (Carry), 如果运算的最高为产生进位或借位, 则CF=1&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>PF&lt;/td>
+ &lt;td>奇偶位 (Parity), 如果运算结果的低8 位中的1的个数(二进制)为偶数个, 则PF=1&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>AF&lt;/td>
+ &lt;td>辅助进位标志 (Auxiliary), 当运算结果的低4 位产生一个进位或借位, 则AF=1&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>ZF&lt;/td>
+ &lt;td>零标志 (Zero), 若运算结果为0, 则ZF=1&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SF&lt;/td>
+ &lt;td>符号标志 (Signed), 当数据用补码表示时, 最高为表示符号为, SF与运算结果最高为相同&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>OF&lt;/td>
+ &lt;td>溢出标志 (Overflow), 若运算中产生了溢出, 则OF=1&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>DF&lt;/td>
+ &lt;td>方向标志 (Direction), 用于控制串操作指令, 如果DF=0, 则串操作过程中地址会增大, 否则地址会减小&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>IF&lt;/td>
+ &lt;td>中断允许标志 (Interrupt), 若IF=0, 则CPU不能对可屏蔽中断做出响应, 否则CPU可以接受可屏蔽中断&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>TF&lt;/td>
+ &lt;td>单步标志 (Trap), 如果TF=1, 则CPU按跟踪方式执行指令&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>&lt;img src="8086-flags-reg.png" alt="flags">&lt;/p></description></item></channel></rss>

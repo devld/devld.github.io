@@ -1,5 +1,35 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Ubuntu on Devld</title><link>/tags/ubuntu/</link><description>Recent content in Ubuntu on Devld</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 14 Feb 2018 20:34:00 +0800</lastBuildDate><atom:link href="/tags/ubuntu/index.xml" rel="self" type="application/rss+xml"/><item><title>Ubuntu 16.04 折腾</title><link>/2018/02/14/ubuntu-beautify/</link><pubDate>Wed, 14 Feb 2018 20:34:00 +0800</pubDate><guid>/2018/02/14/ubuntu-beautify/</guid><description>卸载无用软件
-sudo apt-get autoremove libreoffice-common sudo apt-get autoremove unity-webapps-common sudo apt-get autoremove thunderbird totem rhythmbox sudo apt-get autoremove simple-scan gnome-mahjongg aisleriot sudo apt-get autoremove gnome-mines cheese transmission-common gnome-orca webbrowser-app gnome-sudoku sudo apt-get autoremove onboard deja-dup 安装一些软件包
-sudo apt-get install git vim curl vim
-vim 配置文件 ~/.vimrc
-set nocompatible filetype off syntax enable &amp;#34; Others let g:rainbow_active = 1 set laststatus=2 set fileformats=unix,dos set nowrap set nobackup set nu set ts=4 set sw=4 set expandtab set autoindent set pastetoggle=&amp;lt;f3&amp;gt; au FileType python let b:delimitMate_nesting_quotes = [&amp;#39;&amp;#34;&amp;#39;] set pastetoggle=&amp;lt;f3&amp;gt; 设置 F3 切换粘贴模式，粘贴文本时防止自动缩进</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Ubuntu on Devld</title><link>/tags/ubuntu/</link><description>Recent content in Ubuntu on Devld</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Wed, 14 Feb 2018 20:34:00 +0800</lastBuildDate><atom:link href="/tags/ubuntu/index.xml" rel="self" type="application/rss+xml"/><item><title>Ubuntu 16.04 折腾</title><link>/2018/02/14/ubuntu-beautify/</link><pubDate>Wed, 14 Feb 2018 20:34:00 +0800</pubDate><guid>/2018/02/14/ubuntu-beautify/</guid><description>&lt;ol>
+&lt;li>
+&lt;p>卸载无用软件&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>sudo apt-get autoremove libreoffice-common
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get autoremove unity-webapps-common
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get autoremove thunderbird totem rhythmbox
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get autoremove simple-scan gnome-mahjongg aisleriot
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get autoremove gnome-mines cheese transmission-common gnome-orca webbrowser-app gnome-sudoku
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get autoremove onboard deja-dup
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>安装一些软件包&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>sudo apt-get install git vim curl
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>
+&lt;p>vim&lt;/p>
+&lt;p>vim 配置文件 &lt;code>~/.vimrc&lt;/code>&lt;/p>
+&lt;pre tabindex="0">&lt;code>set nocompatible
+filetype off 
+syntax enable
+
+&amp;#34; Others
+let g:rainbow_active = 1 
+set laststatus=2
+set fileformats=unix,dos
+set nowrap
+set nobackup
+set nu
+set ts=4
+set sw=4
+set expandtab
+set autoindent
+set pastetoggle=&amp;lt;f3&amp;gt;
+au FileType python let b:delimitMate_nesting_quotes = [&amp;#39;&amp;#34;&amp;#39;]
+&lt;/code>&lt;/pre>&lt;p>&lt;code>set pastetoggle=&amp;lt;f3&amp;gt;&lt;/code> 设置 &lt;code>F3&lt;/code> 切换粘贴模式，粘贴文本时防止自动缩进&lt;/p></description></item></channel></rss>

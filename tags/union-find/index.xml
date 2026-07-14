@@ -1,47 +1,47 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Union-Find on Devld</title><link>/tags/union-find/</link><description>Recent content in Union-Find on Devld</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Wed, 27 Dec 2017 10:00:00 +0800</lastBuildDate><atom:link href="/tags/union-find/index.xml" rel="self" type="application/rss+xml"/><item><title>并查集(Union-Find) 判断连通性</title><link>/2017/12/27/union-find/</link><pubDate>Wed, 27 Dec 2017 10:00:00 +0800</pubDate><guid>/2017/12/27/union-find/</guid><description>&lt;p>有如下的一些点&lt;/p>
-&lt;p>&lt;img src="union-find-02.png" alt="Points">&lt;/p>
-&lt;p>每次连接其中两个点，然后判断任意两个点是否连通。&lt;/p>
-&lt;p>&lt;img src="union-find-01.png" alt="Points">&lt;/p>
-&lt;p>比如上图中的 0 和 1，3 和 9 等等都是连通的，而 2 和 8 不连通。&lt;/p>
-&lt;p>只有这么一些点，当然好判断，但如果有这么多呢&lt;/p>
-&lt;p>&lt;img src="union-find-03.png" alt="Points">&lt;/p>
-&lt;p>那么，如何通过算法来判断其中两个点是否是连通的呢？&lt;/p>
-&lt;!-- more -->
-&lt;p>如下图的状态，我们可以将其看作是三个组件(component)。&lt;/p>
-&lt;p>&lt;img src="union-find-04.png" alt="Components">&lt;/p>
-&lt;p>判断两个点是否连通，直接判断它们是否在同一个组件中即可。
-并为每个组件设置一个 id。&lt;/p>
-&lt;p>设置一个数组，用来标识这个组件的 id&lt;/p>
-&lt;p>初始状态下，所有点都是孤立状态，所以它们所在组件的 id 就是它们本身；
-当两个&lt;strong>点&lt;/strong>被连接后，将其中一个点的_标识_更改为另一个点的_标识_；
-而当连接两个&lt;strong>组件&lt;/strong>(含一个以上的点)时，可以将其中一个组件中的所有点的标识更改为另一个组件的标识。&lt;/p>
-&lt;p>当判断两个点是否连接时，直接判断他们是否在同一个组件内。&lt;/p>
-&lt;p>定义如下的方法&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#c678dd">public&lt;/span> &lt;span style="color:#c678dd">class&lt;/span> &lt;span style="color:#e5c07b">UnionFind1&lt;/span> {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#c678dd">private&lt;/span> &lt;span style="color:#e5c07b">int&lt;/span>&lt;span style="color:#56b6c2">[]&lt;/span> &lt;span style="color:#e06c75">ids&lt;/span>;
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#c678dd">public&lt;/span> &lt;span style="color:#e5c07b">void&lt;/span> &lt;span style="color:#61afef;font-weight:bold">union&lt;/span>(&lt;span style="color:#e5c07b">int&lt;/span> &lt;span style="color:#e06c75">p&lt;/span>, &lt;span style="color:#e5c07b">int&lt;/span> &lt;span style="color:#e06c75">q&lt;/span>) {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e5c07b">int&lt;/span> &lt;span style="color:#e06c75">pid&lt;/span> &lt;span style="color:#56b6c2">=&lt;/span> &lt;span style="color:#e06c75">ids&lt;/span>&lt;span style="color:#56b6c2">[&lt;/span>&lt;span style="color:#e06c75">p&lt;/span>&lt;span style="color:#56b6c2">]&lt;/span>;
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e5c07b">int&lt;/span> &lt;span style="color:#e06c75">qid&lt;/span> &lt;span style="color:#56b6c2">=&lt;/span> &lt;span style="color:#e06c75">ids&lt;/span>&lt;span style="color:#56b6c2">[&lt;/span>&lt;span style="color:#e06c75">q&lt;/span>&lt;span style="color:#56b6c2">]&lt;/span>;
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#c678dd">for&lt;/span> (&lt;span style="color:#e5c07b">int&lt;/span> &lt;span style="color:#e06c75">i&lt;/span> &lt;span style="color:#56b6c2">=&lt;/span> &lt;span style="color:#e06c75">0&lt;/span>; &lt;span style="color:#e06c75">i&lt;/span> &lt;span style="color:#56b6c2">&amp;lt;&lt;/span> &lt;span style="color:#e06c75">ids&lt;/span>.&lt;span style="color:#e06c75">length&lt;/span>; &lt;span style="color:#e06c75">i&lt;/span>&lt;span style="color:#56b6c2">++&lt;/span>) {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#7f848e">// 将所有属于 pid 的组件更换为 qid&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#c678dd">if&lt;/span> (&lt;span style="color:#e06c75">pid&lt;/span> &lt;span style="color:#56b6c2">==&lt;/span> &lt;span style="color:#e06c75">ids&lt;/span>&lt;span style="color:#56b6c2">[&lt;/span>&lt;span style="color:#e06c75">i&lt;/span>&lt;span style="color:#56b6c2">]&lt;/span>) {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e06c75">ids&lt;/span>&lt;span style="color:#56b6c2">[&lt;/span>&lt;span style="color:#e06c75">i&lt;/span>&lt;span style="color:#56b6c2">]&lt;/span> &lt;span style="color:#56b6c2">=&lt;/span> &lt;span style="color:#e06c75">qid&lt;/span>;
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#7f848e">// 省略其他方法&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>测试一下&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">UnionFind1&lt;/span> &lt;span style="color:#e06c75">uf&lt;/span> &lt;span style="color:#56b6c2">=&lt;/span> &lt;span style="color:#c678dd">new&lt;/span> &lt;span style="color:#e06c75">UnionFind1&lt;/span>(&lt;span style="color:#e06c75">10&lt;/span>);
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">uf&lt;/span>.&lt;span style="color:#e06c75">union&lt;/span>(&lt;span style="color:#e06c75">0&lt;/span>, &lt;span style="color:#e06c75">1&lt;/span>);
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">uf&lt;/span>.&lt;span style="color:#e06c75">union&lt;/span>(&lt;span style="color:#e06c75">5&lt;/span>, &lt;span style="color:#e06c75">1&lt;/span>);
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">uf&lt;/span>.&lt;span style="color:#e06c75">union&lt;/span>(&lt;span style="color:#e06c75">6&lt;/span>, &lt;span style="color:#e06c75">5&lt;/span>);
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">uf&lt;/span>.&lt;span style="color:#e06c75">union&lt;/span>(&lt;span style="color:#e06c75">2&lt;/span>, &lt;span style="color:#e06c75">7&lt;/span>);
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">uf&lt;/span>.&lt;span style="color:#e06c75">union&lt;/span>(&lt;span style="color:#e06c75">3&lt;/span>, &lt;span style="color:#e06c75">8&lt;/span>);
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">uf&lt;/span>.&lt;span style="color:#e06c75">union&lt;/span>(&lt;span style="color:#e06c75">4&lt;/span>, &lt;span style="color:#e06c75">9&lt;/span>);
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">uf&lt;/span>.&lt;span style="color:#e06c75">union&lt;/span>(&lt;span style="color:#e06c75">3&lt;/span>, &lt;span style="color:#e06c75">4&lt;/span>);
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e06c75">System&lt;/span>.&lt;span style="color:#e06c75">out&lt;/span>.&lt;span style="color:#e06c75">println&lt;/span>(&lt;span style="color:#e06c75">uf&lt;/span>.&lt;span style="color:#e06c75">connected&lt;/span>(&lt;span style="color:#e06c75">0&lt;/span>, &lt;span style="color:#e06c75">6&lt;/span>));
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>执行上述操作后&lt;/p></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Union-Find on Devld</title><link>https://devld.me/tags/union-find/</link><description>Recent content in Union-Find on Devld</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Wed, 27 Dec 2017 10:00:00 +0800</lastBuildDate><atom:link href="https://devld.me/tags/union-find/index.xml" rel="self" type="application/rss+xml"/><item><title>并查集(Union-Find) 判断连通性</title><link>https://devld.me/2017/12/27/union-find/</link><pubDate>Wed, 27 Dec 2017 10:00:00 +0800</pubDate><guid>https://devld.me/2017/12/27/union-find/</guid><description>&lt;p&gt;有如下的一些点&lt;/p&gt;
+&lt;p&gt;&lt;img src="union-find-02.png" alt="Points"&gt;&lt;/p&gt;
+&lt;p&gt;每次连接其中两个点，然后判断任意两个点是否连通。&lt;/p&gt;
+&lt;p&gt;&lt;img src="union-find-01.png" alt="Points"&gt;&lt;/p&gt;
+&lt;p&gt;比如上图中的 0 和 1，3 和 9 等等都是连通的，而 2 和 8 不连通。&lt;/p&gt;
+&lt;p&gt;只有这么一些点，当然好判断，但如果有这么多呢&lt;/p&gt;
+&lt;p&gt;&lt;img src="union-find-03.png" alt="Points"&gt;&lt;/p&gt;
+&lt;p&gt;那么，如何通过算法来判断其中两个点是否是连通的呢？&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;如下图的状态，我们可以将其看作是三个组件(component)。&lt;/p&gt;
+&lt;p&gt;&lt;img src="union-find-04.png" alt="Components"&gt;&lt;/p&gt;
+&lt;p&gt;判断两个点是否连通，直接判断它们是否在同一个组件中即可。
+并为每个组件设置一个 id。&lt;/p&gt;
+&lt;p&gt;设置一个数组，用来标识这个组件的 id&lt;/p&gt;
+&lt;p&gt;初始状态下，所有点都是孤立状态，所以它们所在组件的 id 就是它们本身；
+当两个&lt;strong&gt;点&lt;/strong&gt;被连接后，将其中一个点的_标识_更改为另一个点的_标识_；
+而当连接两个&lt;strong&gt;组件&lt;/strong&gt;(含一个以上的点)时，可以将其中一个组件中的所有点的标识更改为另一个组件的标识。&lt;/p&gt;
+&lt;p&gt;当判断两个点是否连接时，直接判断他们是否在同一个组件内。&lt;/p&gt;
+&lt;p&gt;定义如下的方法&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#c678dd"&gt;public&lt;/span&gt; &lt;span style="color:#c678dd"&gt;class&lt;/span&gt; &lt;span style="color:#e5c07b"&gt;UnionFind1&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#c678dd"&gt;private&lt;/span&gt; &lt;span style="color:#e5c07b"&gt;int&lt;/span&gt;&lt;span style="color:#56b6c2"&gt;[]&lt;/span&gt; &lt;span style="color:#e06c75"&gt;ids&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#c678dd"&gt;public&lt;/span&gt; &lt;span style="color:#e5c07b"&gt;void&lt;/span&gt; &lt;span style="color:#61afef;font-weight:bold"&gt;union&lt;/span&gt;(&lt;span style="color:#e5c07b"&gt;int&lt;/span&gt; &lt;span style="color:#e06c75"&gt;p&lt;/span&gt;, &lt;span style="color:#e5c07b"&gt;int&lt;/span&gt; &lt;span style="color:#e06c75"&gt;q&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e5c07b"&gt;int&lt;/span&gt; &lt;span style="color:#e06c75"&gt;pid&lt;/span&gt; &lt;span style="color:#56b6c2"&gt;=&lt;/span&gt; &lt;span style="color:#e06c75"&gt;ids&lt;/span&gt;&lt;span style="color:#56b6c2"&gt;[&lt;/span&gt;&lt;span style="color:#e06c75"&gt;p&lt;/span&gt;&lt;span style="color:#56b6c2"&gt;]&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e5c07b"&gt;int&lt;/span&gt; &lt;span style="color:#e06c75"&gt;qid&lt;/span&gt; &lt;span style="color:#56b6c2"&gt;=&lt;/span&gt; &lt;span style="color:#e06c75"&gt;ids&lt;/span&gt;&lt;span style="color:#56b6c2"&gt;[&lt;/span&gt;&lt;span style="color:#e06c75"&gt;q&lt;/span&gt;&lt;span style="color:#56b6c2"&gt;]&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#c678dd"&gt;for&lt;/span&gt; (&lt;span style="color:#e5c07b"&gt;int&lt;/span&gt; &lt;span style="color:#e06c75"&gt;i&lt;/span&gt; &lt;span style="color:#56b6c2"&gt;=&lt;/span&gt; &lt;span style="color:#e06c75"&gt;0&lt;/span&gt;; &lt;span style="color:#e06c75"&gt;i&lt;/span&gt; &lt;span style="color:#56b6c2"&gt;&amp;lt;&lt;/span&gt; &lt;span style="color:#e06c75"&gt;ids&lt;/span&gt;.&lt;span style="color:#e06c75"&gt;length&lt;/span&gt;; &lt;span style="color:#e06c75"&gt;i&lt;/span&gt;&lt;span style="color:#56b6c2"&gt;++&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7f848e"&gt;// 将所有属于 pid 的组件更换为 qid&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#c678dd"&gt;if&lt;/span&gt; (&lt;span style="color:#e06c75"&gt;pid&lt;/span&gt; &lt;span style="color:#56b6c2"&gt;==&lt;/span&gt; &lt;span style="color:#e06c75"&gt;ids&lt;/span&gt;&lt;span style="color:#56b6c2"&gt;[&lt;/span&gt;&lt;span style="color:#e06c75"&gt;i&lt;/span&gt;&lt;span style="color:#56b6c2"&gt;]&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e06c75"&gt;ids&lt;/span&gt;&lt;span style="color:#56b6c2"&gt;[&lt;/span&gt;&lt;span style="color:#e06c75"&gt;i&lt;/span&gt;&lt;span style="color:#56b6c2"&gt;]&lt;/span&gt; &lt;span style="color:#56b6c2"&gt;=&lt;/span&gt; &lt;span style="color:#e06c75"&gt;qid&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7f848e"&gt;// 省略其他方法&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;测试一下&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#abb2bf;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e06c75"&gt;UnionFind1&lt;/span&gt; &lt;span style="color:#e06c75"&gt;uf&lt;/span&gt; &lt;span style="color:#56b6c2"&gt;=&lt;/span&gt; &lt;span style="color:#c678dd"&gt;new&lt;/span&gt; &lt;span style="color:#e06c75"&gt;UnionFind1&lt;/span&gt;(&lt;span style="color:#e06c75"&gt;10&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e06c75"&gt;uf&lt;/span&gt;.&lt;span style="color:#e06c75"&gt;union&lt;/span&gt;(&lt;span style="color:#e06c75"&gt;0&lt;/span&gt;, &lt;span style="color:#e06c75"&gt;1&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e06c75"&gt;uf&lt;/span&gt;.&lt;span style="color:#e06c75"&gt;union&lt;/span&gt;(&lt;span style="color:#e06c75"&gt;5&lt;/span&gt;, &lt;span style="color:#e06c75"&gt;1&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e06c75"&gt;uf&lt;/span&gt;.&lt;span style="color:#e06c75"&gt;union&lt;/span&gt;(&lt;span style="color:#e06c75"&gt;6&lt;/span&gt;, &lt;span style="color:#e06c75"&gt;5&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e06c75"&gt;uf&lt;/span&gt;.&lt;span style="color:#e06c75"&gt;union&lt;/span&gt;(&lt;span style="color:#e06c75"&gt;2&lt;/span&gt;, &lt;span style="color:#e06c75"&gt;7&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e06c75"&gt;uf&lt;/span&gt;.&lt;span style="color:#e06c75"&gt;union&lt;/span&gt;(&lt;span style="color:#e06c75"&gt;3&lt;/span&gt;, &lt;span style="color:#e06c75"&gt;8&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e06c75"&gt;uf&lt;/span&gt;.&lt;span style="color:#e06c75"&gt;union&lt;/span&gt;(&lt;span style="color:#e06c75"&gt;4&lt;/span&gt;, &lt;span style="color:#e06c75"&gt;9&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e06c75"&gt;uf&lt;/span&gt;.&lt;span style="color:#e06c75"&gt;union&lt;/span&gt;(&lt;span style="color:#e06c75"&gt;3&lt;/span&gt;, &lt;span style="color:#e06c75"&gt;4&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e06c75"&gt;System&lt;/span&gt;.&lt;span style="color:#e06c75"&gt;out&lt;/span&gt;.&lt;span style="color:#e06c75"&gt;println&lt;/span&gt;(&lt;span style="color:#e06c75"&gt;uf&lt;/span&gt;.&lt;span style="color:#e06c75"&gt;connected&lt;/span&gt;(&lt;span style="color:#e06c75"&gt;0&lt;/span&gt;, &lt;span style="color:#e06c75"&gt;6&lt;/span&gt;));
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;执行上述操作后&lt;/p&gt;</description></item></channel></rss>

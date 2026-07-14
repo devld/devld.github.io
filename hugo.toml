@@ -1,13 +1,13 @@
-baseURL = '/'
-languageCode = 'zh-cn'
+baseURL = 'https://devld.me/'
+locale = 'zh-cn'
 title = 'Devld'
 theme = 'paper'
 
 disqusShortname = 'devldd'
 
 [permalinks]
-posts = '/:year/:month/:day/:filename/'
-page = '/:filename/'
+posts = '/:year/:month/:day/:contentbasename/'
+page = '/:contentbasename/'
 
 [params]
 color = 'light'
